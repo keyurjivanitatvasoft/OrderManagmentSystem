@@ -1,0 +1,71 @@
+﻿@{
+}
+@using OrderManagmentSytemDAL.ViewModels;
+@model CustomerDetails;
+<div class="row">
+    <form asp-action="CreateCustomer" asp-controller="Customer" class="col-8" method="post">
+    <input type="hidden" asp-for="@Model.CustomerId" />
+    <div class="col-lg">
+        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+            <input type="text" asp-for="@Model.FirstName" class="form-control border-0 bg-transparent" 
+                   id="firstname">
+            <label for="firstname">First Name</label>
+
+        </div>
+         <span class="text-danger" asp-validation-for="@Model.FirstName"></span>
+    </div>
+    <div class="col-lg">
+        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+            <input type="text" asp-for="@Model.LastName" class="form-control border-0 bg-transparent" 
+                   id="lastname">
+            <label for="lastname">Last Name</label>
+
+        </div>
+         <span class="text-danger" asp-validation-for="@Model.LastName"></span>
+    </div>
+    <div class="col-lg">
+        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+            <input type="text" asp-for="@Model.Email" class="form-control border-0 bg-transparent" 
+                   id="email">
+            <label for="email">Email</label>
+
+        </div>
+         <span class="text-danger" asp-validation-for="@Model.Email"></span>
+    </div>
+    <div class="col-lg">
+        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+            <input type="text" asp-for="@Model.PhoneNumber" class="form-control border-0 bg-transparent"
+                   id="phoneNumber">
+            <label for="phoneNumber">Phone Number</label>
+
+        </div>
+         <span class="text-danger" asp-validation-for="@Model.PhoneNumber"></span>
+    </div>
+    <div class="col-lg">
+        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+            <input type="text" asp-for="@Model.Address" class="form-control border-0 bg-transparent" 
+                   id="address">
+            <label for="address">Addess</label>
+
+        </div>
+         <span class="text-danger" asp-validation-for="@Model.Address"></span>
+    </div>
+
+        <span class="text-danger" asp-validation-for="@Model.CustomerId"></span>
+    <div class="row gx-0 my-3 flex-row">
+        <button type="submit" class="col-2 btn btn-primary m-2">
+            @if (Model.CustomerId == 0)
+            {
+                <span>submit</span>
+            }
+            else
+            {
+                <span>Save Changes</span>
+            }
+        </button>
+        
+        <a asp-action="CustomerList" asp-controller="Customer" class="col-2 btn btn-danger m-2">Cancel</a>
+
+    </div>
+</form>
+</div>

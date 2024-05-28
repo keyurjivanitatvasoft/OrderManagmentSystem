@@ -1,0 +1,84 @@
+﻿
+@{
+    Layout = "_Layout";
+}
+@using OrderManagmentSytemDAL.ViewModels;
+@model Response;
+
+<div class="modal" tabindex="-1" style=" background-color: #0000008f;" id="DeletePopUp" data-backdrop="static">
+</div>
+<div class="d-flex justify-content-end">
+    <a asp-action="CreateCustomer" asp-controller="Customer" class="btn btn-outline-primary">Add Customer</a>
+</div>
+
+@if (Model.IsSuccess && Model.Result is IEnumerable<CustomerDetails>)
+{
+    IEnumerable<CustomerDetails> customers = Model.Result as IEnumerable<CustomerDetails>;
+    
+    if (customers.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Customer Id</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Phone Number</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (CustomerDetails customer in customers)
+                {
+                    <tr>
+                        <th scope="row">@customer.CustomerId</th>
+                        <td>@customer.FirstName</td>
+                        <td>@customer.LastName</td>
+                        <td>@customer.Email</td>
+                        <td>@customer.PhoneNumber</td>
+                        <td>@customer.Address</td>
+                        <td>
+                            <a asp-action="EditCustomer" asp-controller="Customer" asp-route-customerId="@customer.CustomerId" type="button" class="btn btn-primary">Edit</a>
+                            <!--
+                                <a asp-action="DeleteCustomer" asp-controller="Customer" asp-route-customerId="@customer.CustomerId" type="button" class="btn btn-danger">Delete</a> -->
+                            <button type="button" onclick="DeletePopUpOpen(@customer.CustomerId)"  class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h1>Their is not any customer Availabe.</h1>
+    }
+}
+else
+{
+    <h1>Their Was Some Issue</h1>
+}
+<script>
+    
+        function DeletePopUpOpen(CustomerId){
+            $.ajax({
+                url: '/Customers/deleteconfirmation?customerId=' + CustomerId,
+                type: 'Get',
+                contentType: false,
+                success: function (data) {
+                    if (data.message == null) {
+                        $('#DeletePopUp').html('');
+                        $('#DeletePopUp').html(data);
+                        $('#DeletePopUp').modal("show");
+                    } else {
+                        console.log(data.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+</script>

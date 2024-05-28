@@ -1,0 +1,61 @@
+﻿
+@{
+}
+
+@using OrderManagmentSytemDAL.ViewModels;
+@model CreateOrder;
+<div class="row">
+    <form asp-action="CreateOrder" asp-controller="Order" class="col-8" method="post">
+    <input type="hidden" asp-for="@Model.order.orderId" />
+    <div class="col-lg">
+        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+            <input type="text" asp-for="@Model.order.productName" class="form-control border-0 bg-transparent"
+                   id="productname">
+            <label for="productname">Product Name</label>
+
+        </div>
+        <span class="text-danger" asp-validation-for="@Model.order.productName"></span>
+    </div>
+    <div class="col-lg">
+        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+            <input type="text" asp-for="@Model.order.amount" class="form-control border-0 bg-transparent"
+                   id="amount">
+            <label for="amount">Amount</label>
+
+        </div>
+        <span class="text-danger" asp-validation-for="@Model.order.amount"></span>
+    </div>
+    <div class="col-lg">
+        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+            <input type="text" asp-for="@Model.order.quantity" class="form-control border-0 bg-transparent"
+                   id="quantity">
+            <label for="quantity">Quantity</label>
+
+        </div>
+        <span class="text-danger" asp-validation-for="@Model.order.quantity"></span>
+    </div>
+    <div class="col-lg pe-2">
+            <select class="form-select border" asp-for="@Model.order.customer_id">
+               @foreach(CustomerDetails customer in Model.customerDetails)
+                {
+                    <option value="@customer.CustomerId">@customer.FirstName @customer.LastName</option>
+                }
+            </select>
+    </div>
+
+    <div class="row gx-0 my-3">
+        <button type="submit" class="btn btn-primary m-2 col-2">
+            @if (Model.order.orderId == 0)
+            {
+                <span>submit</span>
+            }
+            else
+            {
+                <span>Save Changes</span>
+            }
+        </button>
+        <a asp-action="OrderList" asp-controller="Order" class="col-2 btn btn-danger m-2">Cancel</a>
+
+    </div>
+</form>
+</div>

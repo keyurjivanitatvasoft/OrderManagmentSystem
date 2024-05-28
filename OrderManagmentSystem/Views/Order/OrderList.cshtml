@@ -1,0 +1,84 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using OrderManagmentSytemDAL.ViewModels;
+@model Response;
+
+
+
+
+
+
+<div class="modal fade" tabindex="-1" style=" background-color: #0000008f;" id="DeletePopUp" >
+</div>
+<div class="d-flex justify-content-end">
+    <a asp-action="CreateOrder" asp-controller="Order" class="btn btn-outline-primary">Add Order</a>
+</div>
+@if (Model.IsSuccess && Model.Result is IEnumerable<OrderWithCustomer>)
+{
+    IEnumerable<OrderWithCustomer> orders = Model.Result as IEnumerable<OrderWithCustomer>;
+
+    if (orders.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Order Id</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Customer Name</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (OrderWithCustomer order in orders)
+                {
+                    <tr>
+                        <th scope="row">@order.orderId</th>
+                        <td>@order.productName</td>
+                        <td>@order.amount</td>
+                        <td>@order.quantity</td>
+                        <td>@order.firstName @order.lastName</td>
+                        <td>
+                            <a asp-action="EditOrder" asp-controller="Order" asp-route-orderId="@order.orderId" type="button" class="btn btn-primary">Edit</a>
+                            <!--<a asp-action="DeleteOrder" asp-controller="Order" asp-route-orderId="@order.orderId" type="button" class="btn btn-danger">Delete</a>-->
+                            <button type="button" onclick="DeletePopUpOpen(@order.orderId)" class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h1>Their is not any customer Availabe.</h1>
+    }
+}
+else
+{
+    <h1>Their Was Some Issue</h1>
+}
+<script>
+
+    function DeletePopUpOpen(orderId) {
+        $.ajax({
+            url: '/Orders/deleteconfirmation?orderId=' + orderId,
+            type: 'Get',
+            contentType: false,
+            success: function (data) {
+                if (data.message == null) {
+                    $('#DeletePopUp').html('');
+                    $('#DeletePopUp').html(data);
+                    $('#DeletePopUp').modal("show");
+                } else {
+                    console.log(data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+</script>

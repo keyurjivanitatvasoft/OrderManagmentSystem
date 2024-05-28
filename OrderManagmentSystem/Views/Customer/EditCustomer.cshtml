@@ -1,0 +1,16 @@
+﻿
+@{
+    CustomerDetails customer = Model.Result as CustomerDetails;
+}
+@using OrderManagmentSytemDAL.ViewModels;
+@model Response;
+<div>
+    <!-- Display customer details here -->
+    <p>Customer ID: @customer.CustomerId</p>
+    <p>First Name: @customer.FirstName</p>
+    <p>Last Name: @customer.LastName</p>
+    <p>Email: @customer.Email</p>
+    <p>Phone Number: @customer.PhoneNumber</p>
+    <p>Address: @customer.Address</p>
+    <!-- Add more properties as needed -->
+</div>
