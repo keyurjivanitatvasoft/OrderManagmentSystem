@@ -19,6 +19,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
         {
             context = new OrderManagmentSystemContext(connectionStrings.Value.OrderManagmentSystem);
         }
+        #region BASIC CRUD (Task 1)
         public Response GetCustomers()
         {
             Response response = new Response();
@@ -62,7 +63,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                 SqlParameter[] parameters = {
             new SqlParameter("@customerId", customerId)
         };
-                DataTable customer = context.ExecuteReader("Select * From Customer where customer_id=@customerId AND Isdelete=0", parameters);
+                DataTable customer = context.ExecuteReader("Select * From Customer where customer_id=@customerId AND Isdelete=0", parameters,false);
 
                 if (customer.Rows.Count > 0)
                 {
@@ -104,7 +105,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                 SqlParameter[] parameters = {
             new SqlParameter("@customerId", customerId)
         };
-                int row = context.ExecuteNonQuery("UPDATE Customer SET Isdelete=1  WHERE  customer_id = @customerId", parameters);
+                int row = context.ExecuteNonQuery("UPDATE Customer SET Isdelete=1  WHERE  customer_id = @customerId", parameters,false);
 
                 if (row > 0)
                 {
@@ -139,7 +140,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                     new SqlParameter("@phoneNumber", customerDetails.PhoneNumber),
                     new SqlParameter("@address", customerDetails.Address),
                 };
-                int row = context.ExecuteNonQuery("insert into Customer (firstName,lastName,emailId,phoneNumber,address) values (@firstName,@lastName,@emailId,@phoneNumber,@address)", parameters);
+                int row = context.ExecuteNonQuery("insert into Customer (firstName,lastName,emailId,phoneNumber,address) values (@firstName,@lastName,@emailId,@phoneNumber,@address)", parameters,false);
                 if (row > 0)
                 {
 
@@ -174,7 +175,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                     new SqlParameter("@address", customerDetails.Address),
                     new SqlParameter("@CustomerId", customerDetails.CustomerId),
                 };
-                int row = context.ExecuteNonQuery("update Customer set firstName=@firstName,lastName=@lastName,emailId=@emailId,phoneNumber=@phoneNumber,address=@address where  Customer_Id = @CustomerId", parameters);
+                int row = context.ExecuteNonQuery("update Customer set firstName=@firstName,lastName=@lastName,emailId=@emailId,phoneNumber=@phoneNumber,address=@address where  Customer_Id = @CustomerId", parameters, false);
                 if (row > 0)
                 {
 
@@ -196,16 +197,17 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             return response;
         }
 
-        public Response CustomerExits(string emailId, string phoneNumber)
+        public Response CustomerExits(int customerId,string emailId, string phoneNumber)
         {
             Response response = new Response();
             try
             {
                 SqlParameter[] parameters = {
             new SqlParameter("@emailId", emailId),
-            new SqlParameter("@phoneNumber", phoneNumber)
+            new SqlParameter("@phoneNumber", phoneNumber),
+            new SqlParameter("@phoneNumber", customerId)
         };
-                DataTable customer = context.ExecuteReader("Select * From Customer where emailId=@emailId OR phoneNumber=@phoneNumber", parameters);
+                DataTable customer = context.ExecuteReader("Select * From Customer where customerId!=@customerId AND (emailId=@emailId OR phoneNumber=@phoneNumber )", parameters, false);
 
                 if (customer.Rows.Count > 0)
                 {
@@ -213,12 +215,13 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
 
                     response.StatusCode = HttpStatusCode.OK;
                     response.IsSuccess = true;
+                    //response.Result= customer;
                 }
                 else
                 {
                     response.StatusCode = HttpStatusCode.NotFound;
                     response.IsSuccess = false;
-                    response.ErrorMessages = new List<string>() { "Customer found" };
+                    response.ErrorMessages = new List<string>() { "Customer  found" };
                 }
             }
             catch (Exception ex)
@@ -228,5 +231,88 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             }
             return response;
         }
+        #endregion
+
+
+        #region SP CRUD (Task 2)
+        public Response SearchCustomerSP(CustomerDetails searchCustomer) 
+        {
+            Response response = new Response();
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@firstName", searchCustomer.FirstName),
+                    new SqlParameter("@lastName", searchCustomer.LastName),
+                    new SqlParameter("@phoneNumber", searchCustomer.PhoneNumber),
+                    new SqlParameter("@emailId", searchCustomer.Email),
+                    new SqlParameter("@address", searchCustomer.Address),
+                    new SqlParameter("@customerId", searchCustomer.CustomerId),
+                };
+
+                DataTable customersData = context.ExecuteReader("search_customers", parameters, true);
+                List<CustomerDetails> customersList = new List<CustomerDetails>();
+
+                foreach (DataRow row in customersData.Rows)
+                {
+                    CustomerDetails customer = new CustomerDetails
+                    {
+                        CustomerId = Convert.ToInt32(row["customer_id"]),
+                        FirstName = row["firstName"].ToString(),
+                        LastName = row["lastName"].ToString(),
+                        Email = row["emailId"].ToString(),
+                        PhoneNumber = row["phoneNumber"].ToString(),
+                        Address = row["address"].ToString(),
+                    };
+
+                    customersList.Add(customer);
+                }
+                response.StatusCode = HttpStatusCode.OK;
+                response.IsSuccess = true;
+                response.Result = customersList;
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+
+        public Response SaveCustomersSP(CustomerDetails customer)
+        {
+            Response response = new Response();
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@firstName", customer.FirstName),
+                    new SqlParameter("@lastName", customer.LastName),
+                    new SqlParameter("@phoneNumber", customer.PhoneNumber),
+                    new SqlParameter("@emailId", customer.Email),
+                    new SqlParameter("@address", customer.Address),
+                    new SqlParameter("@customerId", customer.CustomerId),
+                };
+
+                int rowaffected = context.ExecuteNonQuery("SaveCustomers", parameters, true);
+                if (rowaffected > 0)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+        #endregion
     }
 }

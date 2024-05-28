@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using OrderManagmentSytemDAL.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -10,8 +12,6 @@ namespace OrderManagmentSytemDAL.DbContext
 {
     public class OrderManagmentSystemContext
     {
-
-
         private readonly string _connectionString;
 
         public OrderManagmentSystemContext(string connectionString)
@@ -19,11 +19,15 @@ namespace OrderManagmentSytemDAL.DbContext
             _connectionString = connectionString;
         }
 
-        public int ExecuteNonQuery(string query, params SqlParameter[] parameters)
+        public int ExecuteNonQuery(string query,SqlParameter[] parameters,bool IsStoreProcedure)
         {
             using (var connection = new SqlConnection(_connectionString))
             using (var command = new SqlCommand(query, connection))
             {
+                if(IsStoreProcedure)
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                }
                 if (parameters != null)
                 {
                     command.Parameters.AddRange(parameters);
@@ -78,7 +82,7 @@ namespace OrderManagmentSytemDAL.DbContext
             }
             return dataTable;
         }
-        public DataTable ExecuteReader(string query, params SqlParameter[] parameters)
+        public DataTable ExecuteReader(string query, SqlParameter[] parameters,bool IsStoreProcedure)
         {
             var dataTable = new DataTable();
 
@@ -87,6 +91,10 @@ namespace OrderManagmentSytemDAL.DbContext
                 connection.Open();
                 using (var command = new SqlCommand(query, connection))
                 {
+                    if (IsStoreProcedure)
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                    }
                     using (var adapter = new SqlDataAdapter(command))
                     {
                         if (parameters != null)

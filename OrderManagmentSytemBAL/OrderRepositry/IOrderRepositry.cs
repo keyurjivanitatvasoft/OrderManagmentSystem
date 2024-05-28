@@ -16,6 +16,9 @@ namespace OrderManagmentSytemBAL.OrderRepositry
 
         Response DeleteOrder(int orderId);
 
-       
+        Response SearchOrderSP(Order order);
+        Response SaveOrdersSP(Order order);
+
+
     }
 }

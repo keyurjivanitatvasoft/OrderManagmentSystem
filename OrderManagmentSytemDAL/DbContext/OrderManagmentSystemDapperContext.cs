@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using OrderManagmentSytemDAL.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -23,23 +24,40 @@ namespace OrderManagmentSytemDAL.DbContext
         {
             return new SqlConnection(connectionString);
         }
-        public int Execute(string query, object parameters = null)
+        public int Execute(string query, object parameters = null,bool IsStoreProcedure=false)
         {
             using (var connection = CreateConnection())
             {
                 connection.Open();
-                int rowAffected = connection.Execute(query,parameters);
+                int rowAffected = 0;
+                if (IsStoreProcedure)
+                {
+                    rowAffected = connection.Execute(query, parameters,commandType: CommandType.StoredProcedure);
+                }
+                else
+                {
+                    rowAffected = connection.Execute(query, parameters);
+                }
                 connection.Close();
                 return rowAffected;
             }
         }
 
-        public IEnumerable<T> Query<T>(string query)
+        public IEnumerable<T> Query<T>(string query,object parameters, bool IsStoreProcedure=false)
         {
             using (var connection = CreateConnection())
             {
                 connection.Open();
-                IEnumerable<T> Entities = connection.Query<T>(query);
+                IEnumerable<T> Entities;
+                if (IsStoreProcedure)
+                {
+                    Entities = connection.Query<T>(query, parameters,commandType: CommandType.StoredProcedure);
+                }
+                else
+                {
+                    Entities= connection.Query<T>(query, parameters);
+                }
+                   
                 connection.Close();
                 return Entities;
             }

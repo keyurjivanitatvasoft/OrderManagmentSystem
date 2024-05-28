@@ -19,7 +19,8 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Orders")]
         public IActionResult OrderList()
         {
-            Response response=orderRepositry.GetOrders();
+            
+            Response response=orderRepositry.SearchOrderSP(new Order());
             if(response!=null && response.IsSuccess)
             {
                 return View(response);
@@ -32,7 +33,7 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Orders/Addorder")]
         public IActionResult CreateOrder()
         {
-            Response customersResponse = customerRepositry.GetCustomers();
+            Response customersResponse = customerRepositry.SearchCustomerSP(new CustomerDetails());
             OrderManagmentSytemDAL.ViewModels.CreateOrder createOrder = new CreateOrder();
             createOrder.customerDetails = customersResponse.Result as IEnumerable<CustomerDetails>;
             createOrder.order = new Order();
@@ -44,25 +45,21 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Orders/Addorder")]
         public IActionResult CreateOrder(Order order)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                Response customersResponse = customerRepositry.GetCustomers();
+                Response customersResponse = customerRepositry.SearchCustomerSP(new CustomerDetails());
+                IEnumerable<CustomerDetails> customerDetails = customersResponse.Result as IEnumerable<CustomerDetails>;
                 CreateOrder createOrder = new CreateOrder
                 {
-                    customerDetails = customersResponse.Result as IEnumerable<CustomerDetails>,
+                    customerDetails = customerDetails,
                     order = order
                 };
+
                 return View("OrderForm", createOrder);
             }
-            Response response;
-            if (order.orderId == 0)
-            {
-                response = orderRepositry.CreateOrder(order);
-            }
-            else
-            {
-                response = orderRepositry.UpdateOrder(order);
-            }
+
+            
+            Response response= orderRepositry.SaveOrdersSP(order);
 
             if (response.IsSuccess)
             {
@@ -70,7 +67,7 @@ namespace OrderManagmentSystem.Controllers
             }
             else
             {
-                Response customersResponse = customerRepositry.GetCustomers();
+                Response customersResponse = customerRepositry.SearchCustomerSP(new CustomerDetails());
                 CreateOrder createOrder = new CreateOrder
                 {
                     customerDetails = customersResponse.Result as IEnumerable<CustomerDetails>,
@@ -83,19 +80,39 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Orders/edit")]
         public IActionResult EditOrder(int orderId)
         {
-            Response customersResponse = customerRepositry.GetCustomers();
-            OrderManagmentSytemDAL.ViewModels.CreateOrder createOrder = new CreateOrder();
-            createOrder.customerDetails = customersResponse.Result as IEnumerable<CustomerDetails>;
-            Response response=orderRepositry.GetOrder(orderId);
-            if (response.IsSuccess)
+            Response customersResponse = customerRepositry.SearchCustomerSP(new CustomerDetails());
+            IEnumerable<CustomerDetails> customerDetails = customersResponse.Result as IEnumerable<CustomerDetails>;
+
+
+            Order searchOrder = new Order
             {
-                createOrder.order = response.Result as Order;
-                return View("OrderForm", createOrder);
-            }
-            else
+                orderId = orderId
+            };
+            Response orderResponse = orderRepositry.SearchOrderSP(searchOrder);
+            if (orderResponse.IsSuccess)
             {
-                return View("OrderList");
+                if (orderResponse.Result is IEnumerable<OrderWithCustomer> orders)
+                {
+                    if (orders.Count() == 1)
+                    {
+                        
+                        CreateOrder viewModel = new CreateOrder
+                        {
+                            customerDetails = customerDetails,
+                            order = new Order
+                            {
+                                orderId=orders.First().orderId,
+                                productName=orders.First().productName,
+                                quantity=orders.First().quantity,
+                                amount=orders.First().amount,
+                                customer_id=orders.First().customer_id,
+                            },
+                        };
+                        return View("OrderForm", viewModel);
+                    }
+                }
             }
+            return RedirectToAction("OrderList");
         }
         [HttpGet]
         [Route("/Orders/deleteconfirmation")]

@@ -18,28 +18,40 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Customers")]
         public IActionResult CustomerList()
         {
-            Response customerDetails = customerRepositry.GetCustomers();
+            Response customerDetails = customerRepositry.SearchCustomerSP(new CustomerDetails());
             return View(customerDetails);
         }
         [HttpGet]
         [Route("/Customers/edit")]
         public IActionResult EditCustomer(int customerId)
         {
-            Response customerDetails = customerRepositry.GetCustomer(customerId);
-            if (customerDetails.IsSuccess)
+            CustomerDetails customer = new CustomerDetails
             {
-                return View("CustomerForm",customerDetails.Result);
-            }
-            else
+                CustomerId = customerId,
+            };
+            Response customerDetailsResponse = customerRepositry.SearchCustomerSP(customer);
+            if (customerDetailsResponse.IsSuccess)
             {
-                return RedirectToAction("CustomerList");
+                if (customerDetailsResponse.Result is IEnumerable<CustomerDetails> customers)
+                {
+                    if (customers.Count() == 1)
+                    {
+
+                        return View("CustomerForm", customers.First());
+                    }
+                }
             }
+            return RedirectToAction("CustomerList");
         }
         [HttpGet]
         [Route("/Customers/deleteconfirmation")]
         public IActionResult DeleteConfirmationCustomer(int customerId)
         {
-            if (customerRepositry.GetCustomer(customerId).IsSuccess)
+            CustomerDetails customer = new CustomerDetails
+            {
+                CustomerId = customerId,
+            };
+            if (customerRepositry.SearchCustomerSP(customer).IsSuccess)
             {
                 return PartialView("ConfirmationBox", customerId);
             }
@@ -50,7 +62,11 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Customers/delete")]
         public IActionResult DeleteCustomer(int customerId)
         {
-            if (customerRepositry.GetCustomer(customerId).IsSuccess)
+            CustomerDetails customer = new CustomerDetails
+            {
+                CustomerId = customerId,
+            };
+            if (customerRepositry.SearchCustomerSP(customer).IsSuccess)
             {
                 Response customerDetails = customerRepositry.DeleteCustomer(customerId);
                 if (customerDetails.IsSuccess)
@@ -80,21 +96,13 @@ namespace OrderManagmentSystem.Controllers
             {
                 return View("CustomerForm", customerDetails);
             }
-            Response response;
-            if (customerDetails.CustomerId == 0)
+            Response customerCheck= customerRepositry.CustomerExits(customerDetails.CustomerId,customerDetails.Email, customerDetails.PhoneNumber);
+            if (customerCheck.IsSuccess)
             {
-                if(customerRepositry.CustomerExits(customerDetails.Email,customerDetails.PhoneNumber).IsSuccess)
-                {
-                    ModelState.AddModelError("CustomerId", "Customer with this email or phone number already exists.");
-                    return View("CustomerForm", customerDetails);
-                }
-                response = customerRepositry.AddCustomer(customerDetails);
+                ModelState.AddModelError("CustomerId", "Customer with this email or phone number already exists.");
+                return View("CustomerForm", customerDetails);
             }
-            else
-            {
-                response = customerRepositry.EditCustomer(customerDetails);
-            }
-
+            Response response=customerRepositry.SaveCustomersSP(customerDetails);
             if (response.IsSuccess)
             {
                 return RedirectToAction("CustomerList");
