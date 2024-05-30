@@ -21,9 +21,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: app
-          path: ./OrderManagmentSystembin\Release\net7.0/
+          path: ./OrderManagmentSystem/bin\Release\net7.0/
       - name: Deploy to local
         uses: actions/download-artifact@v2
         with:
           name: app
-          path: ./OrderManagmentSystembin\Release\net7.0/
+          path: ./OrderManagmentSystem/bin\Release\net7.0/
