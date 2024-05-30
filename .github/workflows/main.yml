@@ -23,4 +23,4 @@ jobs:
           name: app
           path: ~/Desktop/BuildHereGet
       - name: Deploy to local
-  run: cp /Desktop/BuildHereGet/app.zip /Desktop/Deployment
+        run: cp /Desktop/BuildHereGet/app.zip /Desktop/Deployment
