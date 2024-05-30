@@ -26,4 +26,4 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: app
-          path: 'D:\Projects\IISConfiguration'
+          path: 'D:\Projects\IISConfiguration\'
