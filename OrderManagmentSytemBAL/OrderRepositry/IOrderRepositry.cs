@@ -9,15 +9,18 @@ namespace OrderManagmentSytemBAL.OrderRepositry
 {
     public  interface IOrderRepositry
     {
+        #region simple CRUD (Task 1)
         Response GetOrders();
         Response GetOrder(int orderId);
         Response CreateOrder(Order order);
         Response UpdateOrder(Order order);
 
         Response DeleteOrder(int orderId);
-
+        #endregion
+        #region CRUD SP (Task 2)
         Response SearchOrderSP(Order order);
-        Response SaveOrdersSP(Order order);
+        Response SaveOrdersSP(Order order,bool Isdelete);
+        #endregion
 
 
     }

@@ -3,6 +3,15 @@
 @using OrderManagmentSytemDAL.ViewModels;
 @model CustomerDetails;
 <div class="row">
+    <div>
+        @if (@Model.CustomerId!=0)
+        {
+            <h1>Edit Customer</h1>
+        }else
+        {
+            <h1>Add Customer</h1>
+        }
+    </div>
     <form asp-action="CreateCustomer" asp-controller="Customer" class="col-8" method="post">
     <input type="hidden" asp-for="@Model.CustomerId" />
     <div class="col-lg">

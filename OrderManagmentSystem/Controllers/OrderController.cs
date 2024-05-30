@@ -59,7 +59,7 @@ namespace OrderManagmentSystem.Controllers
             }
 
             
-            Response response= orderRepositry.SaveOrdersSP(order);
+            Response response= orderRepositry.SaveOrdersSP(order,false);
 
             if (response.IsSuccess)
             {
@@ -89,17 +89,12 @@ namespace OrderManagmentSystem.Controllers
                 orderId = orderId
             };
             Response orderResponse = orderRepositry.SearchOrderSP(searchOrder);
-            if (orderResponse.IsSuccess)
-            {
-                if (orderResponse.Result is IEnumerable<OrderWithCustomer> orders)
-                {
-                    if (orders.Count() == 1)
+            if (orderResponse.IsSuccess && orderResponse.Result is IEnumerable<OrderWithCustomer> orders && orders.Count()==1)
+            { 
+                CreateOrder viewModel = new CreateOrder
                     {
-                        
-                        CreateOrder viewModel = new CreateOrder
-                        {
-                            customerDetails = customerDetails,
-                            order = new Order
+                        customerDetails = customerDetails,
+                        order = new Order
                             {
                                 orderId=orders.First().orderId,
                                 productName=orders.First().productName,
@@ -107,10 +102,8 @@ namespace OrderManagmentSystem.Controllers
                                 amount=orders.First().amount,
                                 customer_id=orders.First().customer_id,
                             },
-                        };
-                        return View("OrderForm", viewModel);
-                    }
-                }
+                    };
+                return View("OrderForm", viewModel);
             }
             return RedirectToAction("OrderList");
         }
@@ -118,7 +111,9 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Orders/deleteconfirmation")]
         public IActionResult DeleteConfirmationOrder(int orderId)
         {
-            if (orderRepositry.GetOrder(orderId).IsSuccess)
+            Response order = orderRepositry.SearchOrderSP(new Order { orderId = orderId });
+
+            if (order.IsSuccess && order.Result is IEnumerable<OrderWithCustomer> orders && orders.Count() == 1)
             {
                 return PartialView("ConfirmationBox", orderId);
             }
@@ -129,22 +124,25 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Orders/delete")]
         public IActionResult DeleteOrder(int orderId)
         {
-            if (orderRepositry.GetOrder(orderId).IsSuccess)
+            Response order = orderRepositry.SearchOrderSP(new Order { orderId=orderId});
+
+            if (order.IsSuccess && order.Result is IEnumerable<OrderWithCustomer> orders && orders.Count()==1)
             {
-                Response response = orderRepositry.DeleteOrder(orderId);
-                if(response.IsSuccess)
+                Order deleteOrder = new Order
+                {
+                    orderId=orders.First().orderId,
+                    productName=orders.First().productName,
+                    quantity=orders.First().quantity,
+                    amount=orders.First().amount,
+                    customer_id=orders.First().customer_id,
+                };
+                Response response= orderRepositry.SaveOrdersSP(deleteOrder, true);
+                if (response.IsSuccess)
                 {
                     return RedirectToAction("OrderList");
                 }
-                else
-                {
-                    return RedirectToAction("Privacy", "Home");
-                }
             }
-            else
-            {
-                return RedirectToAction("Privacy", "Home");
-            }
+            return RedirectToAction("Privacy", "Home");
         }
     }
 }

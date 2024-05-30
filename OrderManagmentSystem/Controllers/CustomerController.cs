@@ -30,16 +30,9 @@ namespace OrderManagmentSystem.Controllers
                 CustomerId = customerId,
             };
             Response customerDetailsResponse = customerRepositry.SearchCustomerSP(customer);
-            if (customerDetailsResponse.IsSuccess)
+            if (customerDetailsResponse.IsSuccess && customerDetailsResponse.Result is IEnumerable<CustomerDetails> customers && customers.Count() == 1)
             {
-                if (customerDetailsResponse.Result is IEnumerable<CustomerDetails> customers)
-                {
-                    if (customers.Count() == 1)
-                    {
-
-                        return View("CustomerForm", customers.First());
-                    }
-                }
+                return View("CustomerForm", customers.First());
             }
             return RedirectToAction("CustomerList");
         }
@@ -51,7 +44,8 @@ namespace OrderManagmentSystem.Controllers
             {
                 CustomerId = customerId,
             };
-            if (customerRepositry.SearchCustomerSP(customer).IsSuccess)
+            Response searchCustomer = customerRepositry.SearchCustomerSP(customer);
+            if (searchCustomer.IsSuccess && searchCustomer.Result is IEnumerable<CustomerDetails> customers && customers.Count()==1)
             {
                 return PartialView("ConfirmationBox", customerId);
             }
@@ -66,14 +60,11 @@ namespace OrderManagmentSystem.Controllers
             {
                 CustomerId = customerId,
             };
-            if (customerRepositry.SearchCustomerSP(customer).IsSuccess)
+            Response searchCustomer = customerRepositry.SearchCustomerSP(customer);
+            if (searchCustomer.IsSuccess && searchCustomer.Result is IEnumerable<CustomerDetails> customers && customers.Count() == 1)
             {
-                Response customerDetails = customerRepositry.DeleteCustomer(customerId);
+                Response customerDetails = customerRepositry.SaveCustomersSP(customers.First(),true);
                 if (customerDetails.IsSuccess)
-                {
-                    return RedirectToAction("CustomerList");
-                }
-                else
                 {
                     return RedirectToAction("CustomerList");
                 }
@@ -102,16 +93,12 @@ namespace OrderManagmentSystem.Controllers
                 ModelState.AddModelError("CustomerId", "Customer with this email or phone number already exists.");
                 return View("CustomerForm", customerDetails);
             }
-            Response response=customerRepositry.SaveCustomersSP(customerDetails);
+            Response response=customerRepositry.SaveCustomersSP(customerDetails,false);
             if (response.IsSuccess)
             {
                 return RedirectToAction("CustomerList");
             }
-            else
-            {
-                return View("CustomerForm", customerDetails);
-            }
-
+            return View("CustomerForm", customerDetails);
         }
 
 

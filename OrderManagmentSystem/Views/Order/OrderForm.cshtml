@@ -5,6 +5,16 @@
 @using OrderManagmentSytemDAL.ViewModels;
 @model CreateOrder;
 <div class="row">
+    <div>
+        @if (@Model.order.orderId != 0)
+        {
+            <h1>Edit Order</h1>
+        }
+        else
+        {
+            <h1>Add Order</h1>
+        }
+    </div>
     <form asp-action="CreateOrder" asp-controller="Order" class="col-8" method="post">
     <input type="hidden" asp-for="@Model.order.orderId" />
     <div class="col-lg">
@@ -35,6 +45,7 @@
         <span class="text-danger" asp-validation-for="@Model.order.quantity"></span>
     </div>
     <div class="col-lg pe-2">
+           
             <select class="form-select border" asp-for="@Model.order.customer_id">
                @foreach(CustomerDetails customer in Model.customerDetails)
                 {

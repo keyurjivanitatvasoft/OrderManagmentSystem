@@ -60,9 +60,10 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             Response response = new Response();
             try
             {
-                SqlParameter[] parameters = {
-            new SqlParameter("@customerId", customerId)
-        };
+                SqlParameter[] parameters = 
+                {
+                    new SqlParameter("@customerId", customerId)
+                };
                 DataTable customer = context.ExecuteReader("Select * From Customer where customer_id=@customerId AND Isdelete=0", parameters,false);
 
                 if (customer.Rows.Count > 0)
@@ -102,14 +103,14 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             Response response = new Response();
             try
             {
-                SqlParameter[] parameters = {
-            new SqlParameter("@customerId", customerId)
-        };
+                SqlParameter[] parameters = 
+                {
+                    new SqlParameter("@customerId", customerId)
+                };
                 int row = context.ExecuteNonQuery("UPDATE Customer SET Isdelete=1  WHERE  customer_id = @customerId", parameters,false);
 
                 if (row > 0)
                 {
-
                     response.StatusCode = HttpStatusCode.OK;
                     response.IsSuccess = true;
                 }
@@ -143,7 +144,6 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                 int row = context.ExecuteNonQuery("insert into Customer (firstName,lastName,emailId,phoneNumber,address) values (@firstName,@lastName,@emailId,@phoneNumber,@address)", parameters,false);
                 if (row > 0)
                 {
-
                     response.StatusCode = HttpStatusCode.OK;
                     response.IsSuccess = true;
                 }
@@ -178,7 +178,6 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                 int row = context.ExecuteNonQuery("update Customer set firstName=@firstName,lastName=@lastName,emailId=@emailId,phoneNumber=@phoneNumber,address=@address where  Customer_Id = @CustomerId", parameters, false);
                 if (row > 0)
                 {
-
                     response.StatusCode = HttpStatusCode.OK;
                     response.IsSuccess = true;
                 }
@@ -202,20 +201,17 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             Response response = new Response();
             try
             {
-                SqlParameter[] parameters = {
-            new SqlParameter("@emailId", emailId),
-            new SqlParameter("@phoneNumber", phoneNumber),
-            new SqlParameter("@phoneNumber", customerId)
-        };
-                DataTable customer = context.ExecuteReader("Select * From Customer where customerId!=@customerId AND (emailId=@emailId OR phoneNumber=@phoneNumber )", parameters, false);
-
+                SqlParameter[] parameters = 
+                {
+                    new SqlParameter("@emailId", emailId),
+                    new SqlParameter("@phoneNumber", phoneNumber),
+                    new SqlParameter("@customerId", customerId)
+                };
+                DataTable customer = context.ExecuteReader("Select * From Customer where customer_id!=@customerId AND (emailId=@emailId OR phoneNumber=@phoneNumber )", parameters, false);
                 if (customer.Rows.Count > 0)
                 {
-                    
-
                     response.StatusCode = HttpStatusCode.OK;
                     response.IsSuccess = true;
-                    //response.Result= customer;
                 }
                 else
                 {
@@ -279,7 +275,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             return response;
         }
 
-        public Response SaveCustomersSP(CustomerDetails customer)
+        public Response SaveCustomersSP(CustomerDetails customer, bool Isdelete)
         {
             Response response = new Response();
             try
@@ -292,6 +288,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                     new SqlParameter("@emailId", customer.Email),
                     new SqlParameter("@address", customer.Address),
                     new SqlParameter("@customerId", customer.CustomerId),
+                    new SqlParameter("@Isdelete",Isdelete ),
                 };
 
                 int rowaffected = context.ExecuteNonQuery("SaveCustomers", parameters, true);

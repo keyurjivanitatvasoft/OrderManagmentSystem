@@ -172,7 +172,7 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             }
             return response;
         }
-        public Response SaveOrdersSP(Order order)
+        public Response SaveOrdersSP(Order order,bool Isdelete)
         {
             Response response = new Response();
             try
@@ -183,6 +183,7 @@ namespace OrderManagmentSytemBAL.OrderRepositry
                 parameters.Add("@quantity", order.quantity);
                 parameters.Add("@orderId", order.orderId);
                 parameters.Add("@customerId", order.customer_id);
+                parameters.Add("@Isdelete", Isdelete);
 
                 int rowaffected= context.Execute("SaveOrder", parameters, true);
                 if(rowaffected>0)
