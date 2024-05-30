@@ -21,6 +21,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: app
-          path: $HOME/Desktop/BuildHereGet
+          path: ./OrderManagmentSystembin\Release\net7.0/
       - name: Deploy to local
-        run: cp $HOME/Desktop/BuildHereGet/app.zip $HOME/Desktop/Deployment
+        uses: actions/download-artifact@v2
+        with:
+          name: app
+          path: $HOME/Desktop/Deployment
