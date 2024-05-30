@@ -1,0 +1,45 @@
+﻿@{
+}
+
+@using OrderManagmentSytemDAL.ViewModels;
+@model Response;
+<h1>Customers Order Detail</h1>
+@if (Model.IsSuccess && Model.Result is IEnumerable<CustomersOrderDetails>)
+{
+    IEnumerable<CustomersOrderDetails> customers = Model.Result as IEnumerable<CustomersOrderDetails>;
+
+    if (customers.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Customer Id</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Total Order Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (CustomersOrderDetails customer in customers)
+                {
+                    <tr>
+                        <th scope="row">@customer.CustomerId</th>
+                        <td>@customer.FirstName</td>
+                        <td>@customer.LastName</td>
+                        <td>@customer.TotalAmount</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h1>Their is not any customers Availabe.</h1>
+    }
+}
+else
+{
+    <h1>Their Was Some Issue</h1>
+}
+

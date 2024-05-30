@@ -10,25 +10,25 @@ namespace OrderManagmentSystem.Controllers
         private readonly IOrderRepositry orderRepositry;
         private readonly ICustomerRepositry customerRepositry;
 
-        public OrderController(IOrderRepositry orderRepositry,ICustomerRepositry customerRepositry)
+        public OrderController(IOrderRepositry orderRepositry, ICustomerRepositry customerRepositry)
         {
             this.orderRepositry = orderRepositry;
-            this.customerRepositry=customerRepositry;
+            this.customerRepositry = customerRepositry;
         }
         [HttpGet]
         [Route("/Orders")]
         public IActionResult OrderList()
         {
-            
-            Response response=orderRepositry.SearchOrderSP(new Order());
-            if(response!=null && response.IsSuccess)
+
+            Response response = orderRepositry.SearchOrderSP(new Order());
+            if (response != null && response.IsSuccess)
             {
                 return View(response);
             }
-            return View("Index","Home");
+            return View("Index", "Home");
         }
 
-        
+
         [HttpGet]
         [Route("/Orders/Addorder")]
         public IActionResult CreateOrder()
@@ -38,9 +38,9 @@ namespace OrderManagmentSystem.Controllers
             createOrder.customerDetails = customersResponse.Result as IEnumerable<CustomerDetails>;
             createOrder.order = new Order();
             createOrder.order.customer_id = createOrder.customerDetails.FirstOrDefault().CustomerId;
-            return View("OrderForm",createOrder);
+            return View("OrderForm", createOrder);
         }
-        
+
         [HttpPost]
         [Route("/Orders/Addorder")]
         public IActionResult CreateOrder(Order order)
@@ -58,8 +58,8 @@ namespace OrderManagmentSystem.Controllers
                 return View("OrderForm", createOrder);
             }
 
-            
-            Response response= orderRepositry.SaveOrdersSP(order,false);
+
+            Response response = orderRepositry.SaveOrdersSP(order, false);
 
             if (response.IsSuccess)
             {
@@ -89,20 +89,20 @@ namespace OrderManagmentSystem.Controllers
                 orderId = orderId
             };
             Response orderResponse = orderRepositry.SearchOrderSP(searchOrder);
-            if (orderResponse.IsSuccess && orderResponse.Result is IEnumerable<OrderWithCustomer> orders && orders.Count()==1)
-            { 
+            if (orderResponse.IsSuccess && orderResponse.Result is IEnumerable<OrderWithCustomer> orders && orders.Count() == 1)
+            {
                 CreateOrder viewModel = new CreateOrder
+                {
+                    customerDetails = customerDetails,
+                    order = new Order
                     {
-                        customerDetails = customerDetails,
-                        order = new Order
-                            {
-                                orderId=orders.First().orderId,
-                                productName=orders.First().productName,
-                                quantity=orders.First().quantity,
-                                amount=orders.First().amount,
-                                customer_id=orders.First().customer_id,
-                            },
-                    };
+                        orderId = orders.First().orderId,
+                        productName = orders.First().productName,
+                        quantity = orders.First().quantity,
+                        amount = orders.First().amount,
+                        customer_id = orders.First().customer_id,
+                    },
+                };
                 return View("OrderForm", viewModel);
             }
             return RedirectToAction("OrderList");
@@ -124,25 +124,35 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Orders/delete")]
         public IActionResult DeleteOrder(int orderId)
         {
-            Response order = orderRepositry.SearchOrderSP(new Order { orderId=orderId});
+            Response order = orderRepositry.SearchOrderSP(new Order { orderId = orderId });
 
-            if (order.IsSuccess && order.Result is IEnumerable<OrderWithCustomer> orders && orders.Count()==1)
+            if (order.IsSuccess && order.Result is IEnumerable<OrderWithCustomer> orders && orders.Count() == 1)
             {
                 Order deleteOrder = new Order
                 {
-                    orderId=orders.First().orderId,
-                    productName=orders.First().productName,
-                    quantity=orders.First().quantity,
-                    amount=orders.First().amount,
-                    customer_id=orders.First().customer_id,
+                    orderId = orders.First().orderId,
+                    productName = orders.First().productName,
+                    quantity = orders.First().quantity,
+                    amount = orders.First().amount,
+                    customer_id = orders.First().customer_id,
                 };
-                Response response= orderRepositry.SaveOrdersSP(deleteOrder, true);
+                Response response = orderRepositry.SaveOrdersSP(deleteOrder, true);
                 if (response.IsSuccess)
                 {
                     return RedirectToAction("OrderList");
                 }
             }
             return RedirectToAction("Privacy", "Home");
+        }
+
+        
+        [HttpGet]
+        [Route("/customerorders")]
+        public IActionResult CustomersOrder()
+        {
+            Response response = orderRepositry.CustomerOrderDetails();
+            IEnumerable<CustomersOrderDetails> customersOrderDetails = response.Result as IEnumerable<CustomersOrderDetails>;
+            return View(response);
         }
     }
 }

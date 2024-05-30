@@ -3,13 +3,8 @@
 }
 @using OrderManagmentSytemDAL.ViewModels;
 @model Response;
-
-
-
-
-
-
-<div class="modal fade" tabindex="-1" style=" background-color: #0000008f;" id="DeletePopUp" >
+<h1>Orders</h1>
+<div class="modal fade" tabindex="-1" style=" background-color: #0000008f;" id="DeletePopUp">
 </div>
 <div class="d-flex justify-content-end">
     <a asp-action="CreateOrder" asp-controller="Order" class="btn btn-outline-primary">Add Order</a>
@@ -53,7 +48,7 @@
     }
     else
     {
-        <h1>Their is not any customer Availabe.</h1>
+        <h1>Their is not any Orders Availabe.</h1>
     }
 }
 else

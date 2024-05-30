@@ -75,7 +75,7 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             Response response = new Response();
             try
             {
-                IEnumerable<OrderWithCustomer> orders = context.Query<OrderWithCustomer>("select * From [Order] join Customer on [Order].customer_id=Customer.customer_id where [Order].Isdelete=0",null,false);
+                IEnumerable<OrderWithCustomer> orders = context.Query<OrderWithCustomer>("select * From [Order] join Customer on [Order].customer_id=Customer.customer_id where [Order].Isdelete=0", null, false);
 
                 response.StatusCode = HttpStatusCode.OK;
                 response.IsSuccess = true;
@@ -154,13 +154,13 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@productName", order.productName);
-                    parameters.Add("@amount", order.amount);
-                    parameters.Add("@quantity", order.quantity);
-                    parameters.Add("@orderId", order.orderId);
-                    parameters.Add("@customerId", order.customer_id);
+                parameters.Add("@amount", order.amount);
+                parameters.Add("@quantity", order.quantity);
+                parameters.Add("@orderId", order.orderId);
+                parameters.Add("@customerId", order.customer_id);
 
                 IEnumerable<OrderWithCustomer> customersData = context.Query<OrderWithCustomer>("search_order", parameters, true);
-                
+
                 response.StatusCode = HttpStatusCode.OK;
                 response.IsSuccess = true;
                 response.Result = customersData;
@@ -172,7 +172,7 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             }
             return response;
         }
-        public Response SaveOrdersSP(Order order,bool Isdelete)
+        public Response SaveOrdersSP(Order order, bool Isdelete)
         {
             Response response = new Response();
             try
@@ -185,8 +185,8 @@ namespace OrderManagmentSytemBAL.OrderRepositry
                 parameters.Add("@customerId", order.customer_id);
                 parameters.Add("@Isdelete", Isdelete);
 
-                int rowaffected= context.Execute("SaveOrder", parameters, true);
-                if(rowaffected>0)
+                int rowaffected = context.Execute("SaveOrder", parameters, true);
+                if (rowaffected > 0)
                 {
                     response.StatusCode = HttpStatusCode.OK;
                     response.IsSuccess = true;
@@ -206,6 +206,27 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             return response;
         }
 
+        #endregion
+
+        #region customerOrderDetailsc (Task 3)
+        public Response CustomerOrderDetails()
+        {
+            Response response = new Response();
+            try
+            {
+                IEnumerable<CustomersOrderDetails> customersData = context.Query<CustomersOrderDetails>("customerOrderDetails", null, true);
+                response.StatusCode = HttpStatusCode.OK;
+                response.IsSuccess = true;
+                response.Result = customersData;
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+
+        }
         #endregion
 
     }

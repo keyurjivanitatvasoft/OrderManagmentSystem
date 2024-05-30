@@ -22,6 +22,9 @@ namespace OrderManagmentSytemBAL.OrderRepositry
         Response SaveOrdersSP(Order order,bool Isdelete);
         #endregion
 
+        #region customerOrderDetailsc (Task 3)
+        Response CustomerOrderDetails();
+        #endregion 
 
     }
 }
