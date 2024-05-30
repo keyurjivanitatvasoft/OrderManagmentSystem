@@ -21,6 +21,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: app
-          path: ~/Desktop/BuildHereGet
+          path: $HOME/Desktop/BuildHereGet
       - name: Deploy to local
-        run: cp /Desktop/BuildHereGet/app.zip /Desktop/Deployment
+        run: cp $HOME/Desktop/BuildHereGet/app.zip $HOME/Desktop/Deployment
