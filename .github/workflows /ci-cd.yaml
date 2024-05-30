@@ -23,8 +23,12 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release
+      - name: Publish artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: ~/Desktop/BuildHereGet
 
 
-      - name: Deploy
-        run: |
-          # Add deployment steps here
+     - name: Deploy to local
+       run: cp ~/Desktop/BuildHereGet/app.zip ~/Desktop/Deployment
