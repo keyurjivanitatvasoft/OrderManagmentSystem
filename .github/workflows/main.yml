@@ -40,5 +40,5 @@ jobs:
 
           Write-Host "Copying files to $destinationFolder"
 
-          Copy-Item -Path ${{ github.workspace }}/bin/Debug/net7.0/publish/*
+          Copy-Item -Path ./OrderManagmentSystem/bin/Debug/net7.0/publish/*
           -Destination $destinationFolder -Recurse
