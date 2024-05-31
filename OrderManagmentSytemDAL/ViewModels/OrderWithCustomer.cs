@@ -8,14 +8,14 @@ namespace OrderManagmentSytemDAL.ViewModels
 {
     public class OrderWithCustomer
     {
-        public int orderId { get; set; }
+        public int OrderId { get; set; }
 
-        public string productName { get; set; }
-        public double amount { get; set; }
-        public int quantity { get; set; }
+        public string ProductName { get; set; }
+        public double Amount { get; set; }
+        public int Quantity { get; set; }
 
-        public int customer_id {  get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
+        public int CustomerId{  get; set; }
+        public string CustomerFirstName { get; set; }
+        public string CustomerLastName { get; set; }
     }
 }

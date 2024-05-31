@@ -30,15 +30,15 @@
                 @foreach (OrderWithCustomer order in orders)
                 {
                     <tr>
-                        <th scope="row">@order.orderId</th>
-                        <td>@order.productName</td>
-                        <td>@order.amount</td>
-                        <td>@order.quantity</td>
-                        <td>@order.firstName @order.lastName</td>
+                        <th scope="row">@order.OrderId</th>
+                        <td>@order.ProductName</td>
+                        <td>@order.Amount</td>
+                        <td>@order.Quantity</td>
+                        <td>@order.CustomerFirstName @order.CustomerLastName</td>
                         <td>
-                            <a asp-action="EditOrder" asp-controller="Order" asp-route-orderId="@order.orderId" type="button" class="btn btn-primary">Edit</a>
-                            <!--<a asp-action="DeleteOrder" asp-controller="Order" asp-route-orderId="@order.orderId" type="button" class="btn btn-danger">Delete</a>-->
-                            <button type="button" onclick="DeletePopUpOpen(@order.orderId)" class="btn btn-danger">Delete</button>
+                            <a asp-action="EditOrder" asp-controller="Order" asp-route-orderId="@order.OrderId" type="button" class="btn btn-primary">Edit</a>
+                            <!--<a asp-action="DeleteOrder" asp-controller="Order" asp-route-orderId="@order.OrderId" type="button" class="btn btn-danger">Delete</a>-->
+                            <button type="button" onclick="DeletePopUpOpen(@order.OrderId)" class="btn btn-danger">Delete</button>
                         </td>
                     </tr>
                 }

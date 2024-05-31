@@ -14,15 +14,15 @@ namespace OrderManagmentSytemDAL.ViewModels
         [Required(ErrorMessage = "First name is required")]
         [RegularExpression(@"^\s*[a-zA-Z]+\s*$", ErrorMessage = "First name must contain only letters.")]
         [StringLength(50, ErrorMessage = "First name must not exceed 50 characters.")]
-        public string FirstName { get; set; }
+        public string CustomerFirstName { get; set; }
         [Required(ErrorMessage = "Last name is required")]
         [RegularExpression(@"^\s*[a-zA-Z]+\s*$", ErrorMessage = "Last name must contain only letters.")]
         [StringLength(50, ErrorMessage = "Last name must not exceed 50 characters.")]
-        public string LastName { get; set; }
+        public string CustomerLastName { get; set; }
 
         [Required(ErrorMessage = "Email address is required")]
         [EmailAddress(ErrorMessage = "Invalid email address")]
-        public string Email{ get; set; }
+        public string EmailId{ get; set; }
 
         [Required(ErrorMessage = "Phone number is required")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "Invalid phone number format")]

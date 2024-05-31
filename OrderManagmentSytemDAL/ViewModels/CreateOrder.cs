@@ -8,7 +8,7 @@ namespace OrderManagmentSytemDAL.ViewModels
 {
     public class CreateOrder
     {
-        public Order order {  get; set; }
-        public IEnumerable<CustomerDetails> customerDetails { get; set; }
+        public Order Order {  get; set; }
+        public IEnumerable<CustomerDetails> CustomerDetails { get; set; }
     }
 }

@@ -16,30 +16,30 @@
     <input type="hidden" asp-for="@Model.CustomerId" />
     <div class="col-lg">
         <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.FirstName" class="form-control border-0 bg-transparent" 
+            <input type="text" asp-for="@Model.CustomerFirstName" class="form-control border-0 bg-transparent" 
                    id="firstname">
             <label for="firstname">First Name</label>
 
         </div>
-         <span class="text-danger" asp-validation-for="@Model.FirstName"></span>
+            <span class="text-danger" asp-validation-for="@Model.CustomerFirstName"></span>
     </div>
     <div class="col-lg">
         <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.LastName" class="form-control border-0 bg-transparent" 
-                   id="lastname">
+                <input type="text" asp-for="@Model.CustomerLastName" class="form-control border-0 bg-transparent"
+                       id="lastname">
             <label for="lastname">Last Name</label>
 
         </div>
-         <span class="text-danger" asp-validation-for="@Model.LastName"></span>
+            <span class="text-danger" asp-validation-for="@Model.CustomerLastName"></span>
     </div>
     <div class="col-lg">
         <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.Email" class="form-control border-0 bg-transparent" 
+            <input type="text" asp-for="@Model.EmailId" class="form-control border-0 bg-transparent" 
                    id="email">
             <label for="email">Email</label>
 
         </div>
-         <span class="text-danger" asp-validation-for="@Model.Email"></span>
+         <span class="text-danger" asp-validation-for="@Model.EmailId"></span>
     </div>
     <div class="col-lg">
         <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">

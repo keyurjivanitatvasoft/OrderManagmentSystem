@@ -34,9 +34,9 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                     CustomerDetails customer = new CustomerDetails
                     {
                         CustomerId = Convert.ToInt32(row["customer_id"]),
-                        FirstName = row["firstName"].ToString(),
-                        LastName = row["lastName"].ToString(),
-                        Email = row["emailId"].ToString(),
+                        CustomerFirstName = row["firstName"].ToString(),
+                        CustomerLastName = row["lastName"].ToString(),
+                        EmailId = row["emailId"].ToString(),
                         PhoneNumber = row["phoneNumber"].ToString(),
                         Address = row["address"].ToString(),
                     };
@@ -72,9 +72,9 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                     CustomerDetails customerDetails = new CustomerDetails()
                     {
                         CustomerId = Convert.ToInt32(customerRow["customer_id"]),
-                        FirstName = customerRow["firstName"].ToString(),
-                        LastName = customerRow["lastName"].ToString(),
-                        Email = customerRow["emailId"].ToString(),
+                        CustomerFirstName = customerRow["firstName"].ToString(),
+                        CustomerLastName = customerRow["lastName"].ToString(),
+                        EmailId = customerRow["emailId"].ToString(),
                         PhoneNumber = customerRow["phoneNumber"].ToString(),
                         Address = customerRow["address"].ToString()
                     };
@@ -135,9 +135,9 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             try
             {
                 SqlParameter[] parameters = {
-                    new SqlParameter("@firstName", customerDetails.FirstName),
-                    new SqlParameter("@lastName", customerDetails.LastName),
-                    new SqlParameter("@emailId", customerDetails.Email),
+                    new SqlParameter("@firstName", customerDetails.CustomerFirstName),
+                    new SqlParameter("@lastName", customerDetails.CustomerLastName),
+                    new SqlParameter("@emailId", customerDetails.EmailId),
                     new SqlParameter("@phoneNumber", customerDetails.PhoneNumber),
                     new SqlParameter("@address", customerDetails.Address),
                 };
@@ -168,9 +168,9 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             try
             {
                 SqlParameter[] parameters = {
-                    new SqlParameter("@firstName", customerDetails.FirstName),
-                    new SqlParameter("@lastName", customerDetails.LastName),
-                    new SqlParameter("@emailId", customerDetails.Email),
+                    new SqlParameter("@firstName", customerDetails.CustomerFirstName),
+                    new SqlParameter("@lastName", customerDetails.CustomerLastName),
+                    new SqlParameter("@emailId", customerDetails.EmailId),
                     new SqlParameter("@phoneNumber", customerDetails.PhoneNumber),
                     new SqlParameter("@address", customerDetails.Address),
                     new SqlParameter("@CustomerId", customerDetails.CustomerId),
@@ -238,10 +238,10 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@firstName", searchCustomer.FirstName),
-                    new SqlParameter("@lastName", searchCustomer.LastName),
+                    new SqlParameter("@firstName", searchCustomer.CustomerFirstName),
+                    new SqlParameter("@lastName", searchCustomer.CustomerLastName),
                     new SqlParameter("@phoneNumber", searchCustomer.PhoneNumber),
-                    new SqlParameter("@emailId", searchCustomer.Email),
+                    new SqlParameter("@emailId", searchCustomer.EmailId),
                     new SqlParameter("@address", searchCustomer.Address),
                     new SqlParameter("@customerId", searchCustomer.CustomerId),
                 };
@@ -253,12 +253,12 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                 {
                     CustomerDetails customer = new CustomerDetails
                     {
-                        CustomerId = Convert.ToInt32(row["customer_id"]),
-                        FirstName = row["firstName"].ToString(),
-                        LastName = row["lastName"].ToString(),
-                        Email = row["emailId"].ToString(),
-                        PhoneNumber = row["phoneNumber"].ToString(),
-                        Address = row["address"].ToString(),
+                        CustomerId = Convert.ToInt32(row["CustomerId"]),
+                        CustomerFirstName = row["CustomerFirstName"].ToString(),
+                        CustomerLastName = row["CustomerLastName"].ToString(),
+                        EmailId = row["EmailId"].ToString(),
+                        PhoneNumber = row["PhoneNumber"].ToString(),
+                        Address = row["Address"].ToString(),
                     };
 
                     customersList.Add(customer);
@@ -282,10 +282,10 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@firstName", customer.FirstName),
-                    new SqlParameter("@lastName", customer.LastName),
+                    new SqlParameter("@firstName", customer.CustomerFirstName),
+                    new SqlParameter("@lastName", customer.CustomerLastName),
                     new SqlParameter("@phoneNumber", customer.PhoneNumber),
-                    new SqlParameter("@emailId", customer.Email),
+                    new SqlParameter("@emailId", customer.EmailId),
                     new SqlParameter("@address", customer.Address),
                     new SqlParameter("@customerId", customer.CustomerId),
                     new SqlParameter("@Isdelete",Isdelete ),

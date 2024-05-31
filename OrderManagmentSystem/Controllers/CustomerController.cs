@@ -87,7 +87,7 @@ namespace OrderManagmentSystem.Controllers
             {
                 return View("CustomerForm", customerDetails);
             }
-            Response customerCheck= customerRepositry.CustomerExits(customerDetails.CustomerId,customerDetails.Email, customerDetails.PhoneNumber);
+            Response customerCheck= customerRepositry.CustomerExits(customerDetails.CustomerId,customerDetails.EmailId, customerDetails.PhoneNumber);
             if (customerCheck.IsSuccess)
             {
                 ModelState.AddModelError("CustomerId", "Customer with this email or phone number already exists.");

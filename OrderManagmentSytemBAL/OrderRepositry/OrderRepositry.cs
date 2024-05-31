@@ -153,11 +153,11 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             try
             {
                 var parameters = new DynamicParameters();
-                parameters.Add("@productName", order.productName);
-                parameters.Add("@amount", order.amount);
-                parameters.Add("@quantity", order.quantity);
-                parameters.Add("@orderId", order.orderId);
-                parameters.Add("@customerId", order.customer_id);
+                parameters.Add("@productName", order.ProductName);
+                parameters.Add("@amount", order.Amount);
+                parameters.Add("@quantity", order.Quantity);
+                parameters.Add("@orderId", order.OrderId);
+                parameters.Add("@customerId", order.CustomerId);
 
                 IEnumerable<OrderWithCustomer> customersData = context.Query<OrderWithCustomer>("search_order", parameters, true);
 
@@ -178,11 +178,11 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             try
             {
                 var parameters = new DynamicParameters();
-                parameters.Add("@productName", order.productName);
-                parameters.Add("@amount", order.amount);
-                parameters.Add("@quantity", order.quantity);
-                parameters.Add("@orderId", order.orderId);
-                parameters.Add("@customerId", order.customer_id);
+                parameters.Add("@productName", order.ProductName);
+                parameters.Add("@amount", order.Amount);
+                parameters.Add("@quantity", order.Quantity);
+                parameters.Add("@orderId", order.OrderId);
+                parameters.Add("@customerId", order.CustomerId);
                 parameters.Add("@Isdelete", Isdelete);
 
                 int rowaffected = context.Execute("SaveOrder", parameters, true);
