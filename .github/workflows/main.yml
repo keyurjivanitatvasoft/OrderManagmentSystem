@@ -42,6 +42,6 @@ jobs:
            if (!(Test-Path -Path $destinationFolder -PathType Container)) {
            New-Item -Path $destinationFolder -ItemType Directory -Force
            }
-
+           Write-Host "Current directory: $(Get-Location)/publish/"
            Write-Host "Copying files to $destinationFolder -Path ./publish/*"
            Copy-Item -Path ./publish/* -Destination $destinationFolder -Recurse
