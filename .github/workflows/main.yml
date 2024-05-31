@@ -36,6 +36,12 @@ jobs:
           path: ./publish/
       - name: Deploy to Local PC
         run: |
-          $destinationFolder = "D:\Projects\IISConfiguration"
-          Write-Host "Copying files to $destinationFolder"
-          Copy-Item -Path ./publish/* -Destination $destinationFolder -Recurse
+          $destinationFolder = "D:\Projects\IISConfiguration\"
+
+           Write-Host "Creating destination folder if it doesn't exist: $destinationFolder"
+           if (!(Test-Path -Path $destinationFolder -PathType Container)) {
+           New-Item -Path $destinationFolder -ItemType Directory -Force
+           }
+
+           Write-Host "Copying files to $destinationFolder"
+           Copy-Item -Path ./publish/* -Destination $destinationFolder -Recurse
