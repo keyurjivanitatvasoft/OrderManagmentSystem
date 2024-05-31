@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
@@ -21,9 +21,13 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: app
-          path: ./OrderManagmentSystem/bin\Release\net7.0/
+          path: ./OrderManagmentSystem/bin/Release/net7.0/
+      - name: Navigate to IISConfiguration directory
+        run: 'cd D:/Projects/IISConfiguration'
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
           name: app
-          path: 'D:\Projects\IISConfiguration\'
+          path: 'D:/Projects/IISConfiguration'
+      - name: Deploy to local
+        run: 'cp D:/Projects/IISConfiguration/app.zip D:/Projects/Deployment/'
