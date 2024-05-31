@@ -43,5 +43,5 @@ jobs:
            New-Item -Path $destinationFolder -ItemType Directory -Force
            }
 
-           Write-Host "Copying files to $destinationFolder"
+           Write-Host "Copying files to $destinationFolder -Path ./publish/*"
            Copy-Item -Path ./publish/* -Destination $destinationFolder -Recurse
