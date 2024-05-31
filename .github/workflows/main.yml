@@ -16,7 +16,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release --output ./build-output
       - name: Publish artifact
         run: dotnet publish --configuration Release --output ./publish
       - name: Upload artifact
@@ -33,12 +33,9 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: app
-          path: ./OrderManagmentSystem/bin/Release/net7.0/
+          path: ./publish/
       - name: Deploy to Local PC
-        run: >
+        run: |
           $destinationFolder = "D:\Projects\IISConfiguration"
-
           Write-Host "Copying files to $destinationFolder"
-
-          Copy-Item -Path ./OrderManagmentSystem/bin/Debug/net7.0/publish/*
-          -Destination $destinationFolder -Recurse
+          Copy-Item -Path ./publish/* -Destination $destinationFolder -Recurse
