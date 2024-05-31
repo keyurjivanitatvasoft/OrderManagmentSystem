@@ -33,7 +33,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: app
-          path: ./app
+          path: ./OrderManagmentSystem/bin/Release/net7.0/
       - name: Deploy to Local PC
         run: >
           $destinationFolder = "D:\Projects\IISConfiguration"
