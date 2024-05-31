@@ -22,8 +22,8 @@ jobs:
         with:
           name: app
           path: ./OrderManagmentSystem/bin/Release/net7.0/
-      - name: Navigate to IISConfiguration directory
-        run: 'cd D:/Projects/IISConfiguration'
+      - name: Create IISConfiguration directory if it doesn't exist
+        run: 'New-Item -ItemType Directory -Force -Path D:/Projects/IISConfiguration'
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
