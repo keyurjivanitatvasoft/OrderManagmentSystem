@@ -28,6 +28,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: app
-          path: 'D:/Projects/IISConfiguration'
-      - name: Deploy to local
-        run: 'cp D:/Projects/IISConfiguration/app.zip D:/Projects/Deployment/'
+          path: 'D:/Projects/IISConfiguration/'
+      - name: List files in IISConfiguration directory
+        run: 'Get-ChildItem -Path D:/Projects/IISConfiguration/'
+      - name: Copy artifact to Deployment
+        run: >
+          Get-ChildItem -Path D:/Projects/IISConfiguration/ -Filter "*.zip" |
+          ForEach-Object {
+            Copy-Item -Path $_.FullName -Destination D:/Projects/Deployment/
+          }
