@@ -10,7 +10,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.x
       - name: Restore dependencies
@@ -18,22 +18,27 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
       - name: Publish artifact
-        uses: actions/upload-artifact@v2
+        run: dotnet publish --configuration Release --output ./publish
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
         with:
           name: app
-          path: ./OrderManagmentSystem/bin/Release/net7.0/
-      - name: Create IISConfiguration directory if it doesn't exist
-        run: 'New-Item -ItemType Directory -Force -Path D:/Projects/IISConfiguration'
+          path: ./publish/
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: app
-          path: 'D:/Projects/IISConfiguration/'
-      - name: List files in IISConfiguration directory
-        run: 'Get-ChildItem -Path D:/Projects/IISConfiguration/'
-      - name: Copy artifact to Deployment
+          path: ./app
+      - name: Deploy to Local PC
         run: >
-          Get-ChildItem -Path D:/Projects/IISConfiguration/ -Filter "*.zip" |
-          ForEach-Object {
-            Copy-Item -Path $_.FullName -Destination D:/Projects/Deployment/
-          }
+          $destinationFolder = "D:\Projects\IISConfiguration"
+
+          Write-Host "Copying files to $destinationFolder"
+
+          Copy-Item -Path ${{ github.workspace }}/publish/* -Destination
+          $destinationFolder -Recurse
