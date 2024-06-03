@@ -238,15 +238,15 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@firstName", searchCustomer.CustomerFirstName),
-                    new SqlParameter("@lastName", searchCustomer.CustomerLastName),
-                    new SqlParameter("@phoneNumber", searchCustomer.PhoneNumber),
-                    new SqlParameter("@emailId", searchCustomer.EmailId),
-                    new SqlParameter("@address", searchCustomer.Address),
-                    new SqlParameter("@customerId", searchCustomer.CustomerId),
+                   new SqlParameter("@FirstName", searchCustomer.CustomerFirstName),
+                    new SqlParameter("@LastName", searchCustomer.CustomerLastName),
+                    new SqlParameter("@PhoneNumber", searchCustomer.PhoneNumber),
+                    new SqlParameter("@EmailId", searchCustomer.EmailId),
+                    new SqlParameter("@Address", searchCustomer.Address),
+                    new SqlParameter("@CustomerId", searchCustomer.CustomerId),
                 };
 
-                DataTable customersData = context.ExecuteReader("search_customers", parameters, true);
+                DataTable customersData = context.ExecuteReader("SearchCustomers", parameters, true);
                 List<CustomerDetails> customersList = new List<CustomerDetails>();
 
                 foreach (DataRow row in customersData.Rows)
@@ -282,16 +282,46 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@firstName", customer.CustomerFirstName),
-                    new SqlParameter("@lastName", customer.CustomerLastName),
-                    new SqlParameter("@phoneNumber", customer.PhoneNumber),
-                    new SqlParameter("@emailId", customer.EmailId),
-                    new SqlParameter("@address", customer.Address),
-                    new SqlParameter("@customerId", customer.CustomerId),
-                    new SqlParameter("@Isdelete",Isdelete ),
+                   new SqlParameter("@FirstName", customer.CustomerFirstName),
+                    new SqlParameter("@LastName", customer.CustomerLastName),
+                    new SqlParameter("@PhoneNumber", customer.PhoneNumber),
+                    new SqlParameter("@EmailId", customer.EmailId),
+                    new SqlParameter("@Address", customer.Address),
+                    new SqlParameter("@CustomerId", customer.CustomerId),
+                    new SqlParameter("@IsDelete",Isdelete ),
                 };
 
                 int rowaffected = context.ExecuteNonQuery("SaveCustomers", parameters, true);
+                if (rowaffected > 0)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+
+        public Response DeleteCustomers(List<int> customerIds)
+        {
+            Response response = new Response();
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@CustomerIds", customerIds),
+                };
+
+                int rowaffected = context.ExecuteNonQuery("DeleteCustomers", parameters, true);
                 if (rowaffected > 0)
                 {
                     response.StatusCode = HttpStatusCode.OK;

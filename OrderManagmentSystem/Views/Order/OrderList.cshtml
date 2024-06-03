@@ -8,6 +8,7 @@
 </div>
 <div class="d-flex justify-content-end">
     <a asp-action="CreateOrder" asp-controller="Order" class="btn btn-outline-primary">Add Order</a>
+    <button type="button" onclick="DeletePopUpOpen()" id="btnDeleteOrder" class="btn btn-danger mx-2" disabled>Delete Orders</button>
 </div>
 @if (Model.IsSuccess && Model.Result is IEnumerable<OrderWithCustomer>)
 {
@@ -18,7 +19,9 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">Order Id</th>
+                    <th scope="col">
+                        <input type="checkbox" onclick="AllFileChecked()" id="checkbox-All-orders" />
+                    </th>
                     <th scope="col">Product Name</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Quantity</th>
@@ -30,7 +33,9 @@
                 @foreach (OrderWithCustomer order in orders)
                 {
                     <tr>
-                        <th scope="row">@order.OrderId</th>
+                        <th scope="row">
+                            <input name="SelectedFiles" class="checkbox-order" onchange="checkedforbutton()" type="checkbox" value="@order.OrderId" />
+                        </th>
                         <td>@order.ProductName</td>
                         <td>@order.Amount</td>
                         <td>@order.Quantity</td>
@@ -75,5 +80,39 @@ else
                 console.log(error);
             }
         });
+    }
+
+    function checkedforbutton() {
+
+        let inputs = document.querySelectorAll('.checkbox-order');
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].checked) {
+                document.getElementById('btnDeleteOrder').disabled = false;
+                return;
+            }
+            else {
+                document.getElementById('checkbox-All-orders').checked = false;
+            }
+        }
+        document.getElementById('btnDeleteOrder').disabled = true;
+    }
+
+    function AllFileChecked() {
+        let inputs = document.getElementById('checkbox-All-orders');
+        if (inputs.checked) {
+            let inputs = document.querySelectorAll('.checkbox-order');
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].checked = true;
+            }
+
+            document.getElementById('btnDeleteOrder').disabled = false;
+        } else {
+            let inputs = document.querySelectorAll('.checkbox-order');
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].checked = false;
+            }
+            document.getElementById('btnDeleteOrder').disabled = true;
+        }
+
     }
 </script>

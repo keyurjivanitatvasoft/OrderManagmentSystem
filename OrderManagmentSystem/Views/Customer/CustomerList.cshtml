@@ -9,6 +9,7 @@
 </div>
 <div class="d-flex justify-content-end">
     <a asp-action="CreateCustomer" asp-controller="Customer" class="btn btn-outline-primary">Add Customer</a>
+    <button type="button" onclick="DeletePopUpOpen()" id="btnDeleteCustomer" class="btn btn-danger mx-2" disabled>Delete Customers</button>
 </div>
 
 @if (Model.IsSuccess && Model.Result is IEnumerable<CustomerDetails>)
@@ -20,7 +21,9 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">Customer Id</th>
+                    <th scope="col">
+                        <input type="checkbox" onclick="AllFileChecked()" id="checkbox-All-customer" />
+                    </th>
                     <th scope="col">First Name</th>
                     <th scope="col">Last Name</th>
                     <th scope="col">Email</th>
@@ -33,7 +36,9 @@
                 @foreach (CustomerDetails customer in customers)
                 {
                     <tr>
-                        <th scope="row">@customer.CustomerId</th>
+                        <th scope="row">
+                            <input name="SelectedFiles" class="checkbox-customer" onchange="checkedforbutton()" type="checkbox" value="@customer.CustomerId" />
+                        </th>
                         <td>@customer.CustomerFirstName</td>
                         <td>@customer.CustomerLastName</td>
                         <td>@customer.EmailId</td>
@@ -61,7 +66,7 @@ else
     <h1>Their Was Some Issue</h1>
 }
 <script>
-    
+        
         function DeletePopUpOpen(CustomerId){
             $.ajax({
                 url: '/Customers/deleteconfirmation?customerId=' + CustomerId,
@@ -81,4 +86,37 @@ else
                 }
             });
         }
+    function checkedforbutton() {
+
+        let inputs = document.querySelectorAll('.checkbox-customer');
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].checked) {
+                document.getElementById('btnDeleteCustomer').disabled = false;
+                return;
+            }
+            else {
+                document.getElementById('checkbox-All-customer').checked = false;
+            }
+        }
+        document.getElementById('btnDeleteCustomer').disabled = true;
+    }
+
+    function AllFileChecked() {
+        let inputs = document.getElementById('checkbox-All-customer');
+        if (inputs.checked) {
+            let inputs = document.querySelectorAll('.checkbox-customer');
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].checked = true;
+            }
+
+            document.getElementById('btnDeleteCustomer').disabled = false;
+        } else {
+            let inputs = document.querySelectorAll('.checkbox-customer');
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].checked = false;
+            }
+            document.getElementById('btnDeleteCustomer').disabled = true;
+        }
+
+    }
 </script>

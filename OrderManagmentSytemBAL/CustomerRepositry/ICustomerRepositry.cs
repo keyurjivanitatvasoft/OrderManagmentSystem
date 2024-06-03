@@ -21,6 +21,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
         #region CRUD SP (Task 2)
         Response SearchCustomerSP(CustomerDetails customer);
         Response SaveCustomersSP(CustomerDetails customer,bool Isdelete);
+        Response DeleteCustomers(List<int> customerIds);
         #endregion
     }
 }

@@ -153,13 +153,13 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             try
             {
                 var parameters = new DynamicParameters();
-                parameters.Add("@productName", order.ProductName);
-                parameters.Add("@amount", order.Amount);
-                parameters.Add("@quantity", order.Quantity);
-                parameters.Add("@orderId", order.OrderId);
-                parameters.Add("@customerId", order.CustomerId);
+                parameters.Add("@ProductName", order.ProductName);
+                parameters.Add("@Amount", order.Amount);
+                parameters.Add("@Quantity", order.Quantity);
+                parameters.Add("@OrderId", order.OrderId);
+                parameters.Add("@CustomerId", order.CustomerId);
 
-                IEnumerable<OrderWithCustomer> customersData = context.Query<OrderWithCustomer>("search_order", parameters, true);
+                IEnumerable<OrderWithCustomer> customersData = context.Query<OrderWithCustomer>("SearchOrder", parameters, true);
 
                 response.StatusCode = HttpStatusCode.OK;
                 response.IsSuccess = true;
@@ -178,12 +178,12 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             try
             {
                 var parameters = new DynamicParameters();
-                parameters.Add("@productName", order.ProductName);
-                parameters.Add("@amount", order.Amount);
-                parameters.Add("@quantity", order.Quantity);
-                parameters.Add("@orderId", order.OrderId);
-                parameters.Add("@customerId", order.CustomerId);
-                parameters.Add("@Isdelete", Isdelete);
+                parameters.Add("@ProductName", order.ProductName);
+                parameters.Add("@Amount", order.Amount);
+                parameters.Add("@Quantity", order.Quantity);
+                parameters.Add("@OrderId", order.OrderId);
+                parameters.Add("@CustomerId", order.CustomerId);
+                parameters.Add("@IsDelete", Isdelete);
 
                 int rowaffected = context.Execute("SaveOrder", parameters, true);
                 if (rowaffected > 0)
