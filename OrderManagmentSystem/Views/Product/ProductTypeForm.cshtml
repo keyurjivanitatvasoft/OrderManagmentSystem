@@ -1,0 +1,46 @@
+﻿@{
+}
+@using OrderManagmentSytemDAL.ViewModels;
+@model ProductType;
+<div class="row">
+    <div>
+        @if (@Model.ProductTypeId != 0)
+        {
+            <h1>Edit Product Type</h1>
+        }
+        else
+        {
+            <h1>Add Product Type</h1>
+        }
+    </div>
+    <form asp-action="CreateProductType" asp-controller="Product" class="col-8" method="post">
+        <input type="hidden" asp-for="@Model.ProductTypeId" />
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+                <input type="text" asp-for="@Model.ProductTypeName" class="form-control border-0 bg-transparent"
+                       id="producttypename">
+                <label for="producttypename">Product Type Name</label>
+
+            </div>
+            <span class="text-danger" asp-validation-for="@Model.ProductTypeName"></span>
+        </div>
+       
+
+        <span class="text-danger" asp-validation-for="@Model.ProductTypeId"></span>
+        <div class="row gx-0 my-3 flex-row">
+            <button type="submit" class="col-2 btn btn-primary m-2">
+                @if (Model.ProductTypeId == 0)
+                {
+                    <span>submit</span>
+                }
+                else
+                {
+                    <span>Save Changes</span>
+                }
+            </button>
+
+            <a asp-action="ProductTypeList" asp-controller="Product" class="col-2 btn btn-danger m-2">Cancel</a>
+
+        </div>
+    </form>
+</div>

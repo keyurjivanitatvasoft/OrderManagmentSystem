@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using OrderManagmentSytemBAL.CustomerRepositry;
 using OrderManagmentSytemBAL.OrderRepositry;
+using OrderManagmentSytemBAL.ProductRepositry;
 using OrderManagmentSytemDAL.ViewModels;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ICustomerRepositry,CustomerRepositry>();
 builder.Services.AddScoped<IOrderRepositry, OrderRepositry>();
+builder.Services.AddScoped<IProductRepositry, ProductRepositry>();
 builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
 var app = builder.Build();
 

@@ -1,0 +1,74 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using OrderManagmentSytemDAL.ViewModels;
+@model Response;
+<h1>Product Type</h1>
+<div class="modal" tabindex="-1" style=" background-color: #0000008f;" id="DeletePopUp" data-backdrop="static">
+</div>
+<div class="d-flex justify-content-end">
+    <a asp-action="CreateProductType" asp-controller="Product" class="btn btn-outline-primary">Add Product Type</a>
+</div>
+
+@if (Model.IsSuccess && Model.Result is IEnumerable<ProductType>)
+{
+    IEnumerable<ProductType> productTypes = Model.Result as IEnumerable<ProductType>;
+
+    if (productTypes.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Product Type Id</th>
+                    <th scope="col">Product Type Name</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ProductType producttype in productTypes)
+                {
+                    <tr>
+                        <th scope="row">@producttype.ProductTypeId</th>
+                        <td>@producttype.ProductTypeName</td>
+                        
+                        <td>
+                            <a asp-action="EditProductType" asp-controller="Product" asp-route-productTypeId="@producttype.ProductTypeId" type="button" class="btn btn-primary">Edit</a>
+                            <button type="button" onclick="DeletePopUpOpen(@producttype.ProductTypeId)" class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h1>Their is not any Product Type Availabe.</h1>
+    }
+}
+else
+{
+    <h1>Their Was Some Issue</h1>
+}
+<script>
+
+    function DeletePopUpOpen(ProductId) {
+        $.ajax({
+            url: '/producttype/deleteconfirmation?productTypeId=' + ProductId,
+            type: 'Get',
+            contentType: false,
+            success: function (data) {
+                if (data.message == null) {
+                    $('#DeletePopUp').html('');
+                    $('#DeletePopUp').html(data);
+                    $('#DeletePopUp').modal("show");
+                } else {
+                    console.log(data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+</script>
