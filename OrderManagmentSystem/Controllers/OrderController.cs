@@ -43,7 +43,7 @@ namespace OrderManagmentSystem.Controllers
 
         [HttpPost]
         [Route("/Orders/Addorder")]
-        public IActionResult CreateOrder(Order order)
+        public IActionResult CreateOrder(Order order )
         {
             if (!ModelState.IsValid)
             {
@@ -107,39 +107,35 @@ namespace OrderManagmentSystem.Controllers
             }
             return RedirectToAction("OrderList");
         }
-        [HttpGet]
+        [HttpPost]
         [Route("/Orders/deleteconfirmation")]
-        public IActionResult DeleteConfirmationOrder(int orderId)
+        public IActionResult DeleteConfirmationOrder(List<int> orderIds)
         {
-            Response order = orderRepositry.SearchOrderSP(new Order { OrderId = orderId });
+            Response order = orderRepositry.OrdersExits(orderIds);
 
-            if (order.IsSuccess && order.Result is IEnumerable<OrderWithCustomer> orders && orders.Count() == 1)
+            if (order.IsSuccess )
             {
-                return PartialView("ConfirmationBox", orderId);
+                return PartialView("ConfirmationBox", orderIds);
             }
             return Json(new { message = "Order Not Exits" });
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("/Orders/delete")]
-        public IActionResult DeleteOrder(int orderId)
+        public IActionResult DeleteOrder(List<int> orderIds)
         {
-            Response order = orderRepositry.SearchOrderSP(new Order { OrderId = orderId });
+            Response orders = orderRepositry.OrdersExits(orderIds);
 
-            if (order.IsSuccess && order.Result is IEnumerable<OrderWithCustomer> orders && orders.Count() == 1)
+            if (orders.IsSuccess)
             {
-                Order deleteOrder = new Order
-                {
-                    OrderId = orders.First().OrderId,
-                    ProductName = orders.First().ProductName,
-                    Quantity = orders.First().Quantity,
-                    Amount = orders.First().Amount,
-                    CustomerId= orders.First().CustomerId,
-                };
-                Response response = orderRepositry.SaveOrdersSP(deleteOrder, true);
-                if (response.IsSuccess)
+                Response DeleteOrders = orderRepositry.DeleteOrders(orderIds);
+                if (DeleteOrders.IsSuccess)
                 {
                     return RedirectToAction("OrderList");
+                }
+                else
+                {
+                    return PartialView("ConfirmationBox", orderIds);
                 }
             }
             return RedirectToAction("Privacy", "Home");

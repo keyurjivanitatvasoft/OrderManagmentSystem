@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderManagmentSytemBAL.CustomerRepositry;
 using OrderManagmentSytemDAL.ViewModels;
-
+using Microsoft.AspNetCore.Http.Features;
 namespace OrderManagmentSystem.Controllers
 {
     public class CustomerController : Controller
 
-    { 
+    {
         private readonly ICustomerRepositry customerRepositry;
 
         public CustomerController(ICustomerRepositry customerRepositry)
@@ -36,64 +36,80 @@ namespace OrderManagmentSystem.Controllers
             }
             return RedirectToAction("CustomerList");
         }
-        [HttpGet]
+        [HttpPost]
         [Route("/Customers/deleteconfirmation")]
-        public IActionResult DeleteConfirmationCustomer(int customerId)
+        public IActionResult DeleteConfirmationCustomer(List<int> customerIds)
         {
-            CustomerDetails customer = new CustomerDetails
+            Response searchCustomer = customerRepositry.CustomersExits(customerIds);
+            if (searchCustomer.IsSuccess)
             {
-                CustomerId = customerId,
-            };
-            Response searchCustomer = customerRepositry.SearchCustomerSP(customer);
-            if (searchCustomer.IsSuccess && searchCustomer.Result is IEnumerable<CustomerDetails> customers && customers.Count()==1)
-            {
-                return PartialView("ConfirmationBox", customerId);
+                return PartialView("ConfirmationBox", customerIds);
             }
-            return Json(new {message="Customer Not Exits"});
+            return Json(new { message = "Customer Not Exits" });
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("/Customers/delete")]
-        public IActionResult DeleteCustomer(int customerId)
+        public IActionResult DeleteCustomer(List<int> customerIds)
         {
-            CustomerDetails customer = new CustomerDetails
+            Response searchCustomer = customerRepositry.CustomersExits(customerIds);
+            if (searchCustomer.IsSuccess)
             {
-                CustomerId = customerId,
-            };
-            Response searchCustomer = customerRepositry.SearchCustomerSP(customer);
-            if (searchCustomer.IsSuccess && searchCustomer.Result is IEnumerable<CustomerDetails> customers && customers.Count() == 1)
-            {
-                Response customerDetails = customerRepositry.SaveCustomersSP(customers.First(),true);
+                Response customerDetails = customerRepositry.DeleteCustomers(customerIds);
                 if (customerDetails.IsSuccess)
                 {
                     return RedirectToAction("CustomerList");
                 }
+                else
+                {
+                    return PartialView("ConfirmationBox", customerIds);
+                }
             }
-            return RedirectToAction("Privacy","Home");
+            return RedirectToAction("Privacy", "Home");
         }
         [HttpGet]
         [Route("/Customers/Addcustomer")]
         public IActionResult CreateCustomer()
         {
             CustomerDetails customer = new CustomerDetails();
-                return View("CustomerForm",customer);
-           
+            return View("CustomerForm", customer);
+
         }
         [HttpPost]
         [Route("/Customers/Addcustomer")]
-        public IActionResult CreateCustomer(CustomerDetails customerDetails)
+        public IActionResult CreateCustomer(CustomerDetails customerDetails, IFormFile? ProfilePhoto)
         {
             if (!ModelState.IsValid)
             {
                 return View("CustomerForm", customerDetails);
             }
-            Response customerCheck= customerRepositry.CustomerExits(customerDetails.CustomerId,customerDetails.EmailId, customerDetails.PhoneNumber);
+            Response customerCheck = customerRepositry.CustomerExits(customerDetails.CustomerId, customerDetails.EmailId, customerDetails.PhoneNumber);
             if (customerCheck.IsSuccess)
             {
                 ModelState.AddModelError("CustomerId", "Customer with this email or phone number already exists.");
                 return View("CustomerForm", customerDetails);
             }
-            Response response=customerRepositry.SaveCustomersSP(customerDetails,false);
+            if (!(ProfilePhoto == null || !(ProfilePhoto.Length > 0)))
+            {
+                string[] _permittedExtensions = { ".jpg", ".jpeg", ".png" };
+                string[] _permittedMimeTypes = { "image/jpeg", "image/png" };
+                var fileExtension = System.IO.Path.GetExtension(ProfilePhoto.FileName).ToLowerInvariant();
+                var fileContentType = ProfilePhoto.ContentType.ToLowerInvariant();
+
+                if (!_permittedExtensions.Contains(fileExtension) || !_permittedMimeTypes.Contains(fileContentType))
+                {
+                    ModelState.AddModelError("Photo", "only png and jpg  format file upload.");
+                    return View("CustomerForm", customerDetails);
+                }
+                string fileName = customerRepositry.UploadFile(ProfilePhoto);
+                if (fileName == null && customerDetails.CustomerId == 0)
+                {
+                    ModelState.AddModelError("Photo", "Error in Uploading File.");
+                    return View("CustomerForm", customerDetails);
+                }
+                customerDetails.Photo = fileName;
+            }
+            Response response = customerRepositry.SaveCustomersSP(customerDetails, false);
             if (response.IsSuccess)
             {
                 return RedirectToAction("CustomerList");

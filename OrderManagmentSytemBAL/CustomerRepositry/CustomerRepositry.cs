@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using OrderManagmentSytemBAL.Services;
 using OrderManagmentSytemDAL.DbContext;
 using OrderManagmentSytemDAL.ViewModels;
 using System;
@@ -9,9 +11,10 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace OrderManagmentSytemBAL.CustomerRepositry
 {
+
+
     public class CustomerRepositry : ICustomerRepositry
     {
         private readonly OrderManagmentSystemContext context;
@@ -19,6 +22,31 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
         {
             context = new OrderManagmentSystemContext(connectionStrings.Value.OrderManagmentSystem);
         }
+
+        #region UploadFiles 
+        public string UploadFile(IFormFile file)
+        {
+            if (file != null && file.Length > 0)
+            {
+                string uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CustomerProfilePhotos");
+                if (!Directory.Exists(uploadsPath))
+                {
+                    Directory.CreateDirectory(uploadsPath);
+                }
+
+                string fileName = FileUploadServices.GetFilenameWithoutExtension(file.FileName) + Guid.NewGuid() + Path.GetExtension(file.FileName);
+                string filePath = Path.Combine(uploadsPath, fileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+
+                return "/CustomerProfilePhotos/" + fileName;
+            }
+            return null;
+        }
+        #endregion
         #region BASIC CRUD (Task 1)
         public Response GetCustomers()
         {
@@ -60,11 +88,11 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             Response response = new Response();
             try
             {
-                SqlParameter[] parameters = 
+                SqlParameter[] parameters =
                 {
                     new SqlParameter("@customerId", customerId)
                 };
-                DataTable customer = context.ExecuteReader("Select * From Customer where customer_id=@customerId AND Isdelete=0", parameters,false);
+                DataTable customer = context.ExecuteReader("Select * From Customer where customer_id=@customerId AND Isdelete=0", parameters, false);
 
                 if (customer.Rows.Count > 0)
                 {
@@ -103,11 +131,11 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             Response response = new Response();
             try
             {
-                SqlParameter[] parameters = 
+                SqlParameter[] parameters =
                 {
                     new SqlParameter("@customerId", customerId)
                 };
-                int row = context.ExecuteNonQuery("UPDATE Customer SET Isdelete=1  WHERE  customer_id = @customerId", parameters,false);
+                int row = context.ExecuteNonQuery("UPDATE Customer SET Isdelete=1  WHERE  customer_id = @customerId", parameters, false);
 
                 if (row > 0)
                 {
@@ -141,7 +169,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                     new SqlParameter("@phoneNumber", customerDetails.PhoneNumber),
                     new SqlParameter("@address", customerDetails.Address),
                 };
-                int row = context.ExecuteNonQuery("insert into Customer (firstName,lastName,emailId,phoneNumber,address) values (@firstName,@lastName,@emailId,@phoneNumber,@address)", parameters,false);
+                int row = context.ExecuteNonQuery("insert into Customer (firstName,lastName,emailId,phoneNumber,address) values (@firstName,@lastName,@emailId,@phoneNumber,@address)", parameters, false);
                 if (row > 0)
                 {
                     response.StatusCode = HttpStatusCode.OK;
@@ -196,12 +224,12 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             return response;
         }
 
-        public Response CustomerExits(int customerId,string emailId, string phoneNumber)
+        public Response CustomerExits(int customerId, string emailId, string phoneNumber)
         {
             Response response = new Response();
             try
             {
-                SqlParameter[] parameters = 
+                SqlParameter[] parameters =
                 {
                     new SqlParameter("@emailId", emailId),
                     new SqlParameter("@phoneNumber", phoneNumber),
@@ -231,7 +259,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
 
 
         #region SP CRUD (Task 2)
-        public Response SearchCustomerSP(CustomerDetails searchCustomer) 
+        public Response SearchCustomerSP(CustomerDetails searchCustomer)
         {
             Response response = new Response();
             try
@@ -259,6 +287,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                         EmailId = row["EmailId"].ToString(),
                         PhoneNumber = row["PhoneNumber"].ToString(),
                         Address = row["Address"].ToString(),
+                        Photo = row["Photo"].ToString(),
                     };
 
                     customersList.Add(customer);
@@ -289,6 +318,8 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
                     new SqlParameter("@Address", customer.Address),
                     new SqlParameter("@CustomerId", customer.CustomerId),
                     new SqlParameter("@IsDelete",Isdelete ),
+                    new SqlParameter("@Photo",customer.Photo ),
+
                 };
 
                 int rowaffected = context.ExecuteNonQuery("SaveCustomers", parameters, true);
@@ -311,18 +342,36 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             return response;
         }
 
-        public Response DeleteCustomers(List<int> customerIds)
+        #endregion
+
+
+        #region Task 4
+
+        public Response CustomersExits(List<int> customerIds)
         {
             Response response = new Response();
             try
             {
+                DataTable customers = new DataTable();
+                customers.Columns.Add(new DataColumn("Value", typeof(int)));
+                foreach (int id in customerIds)
+                {
+                    customers.Rows.Add(id);
+                }
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@CustomerIds", customerIds),
+                    new SqlParameter
+                    {
+                            ParameterName = "@CustomerIds",
+                            SqlDbType = SqlDbType.Structured,
+                            TypeName = "IntListType",
+                            Value = customers
+                    }
+
                 };
 
-                int rowaffected = context.ExecuteNonQuery("DeleteCustomers", parameters, true);
-                if (rowaffected > 0)
+                int customersCount = context.ExecuteScalar<int>("CustomersExits", parameters, true);
+                if (customersCount == customerIds.Count())
                 {
                     response.StatusCode = HttpStatusCode.OK;
                     response.IsSuccess = true;
@@ -336,6 +385,50 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             catch (Exception ex)
             {
                 response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+
+            return response;
+        }
+        public Response DeleteCustomers(List<int> customerIds)
+        {
+            Response response = new Response();
+            try
+            {
+                DataTable customers = new DataTable();
+                customers.Columns.Add(new DataColumn("Value", typeof(int)));
+                foreach (int id in customerIds)
+                {
+                    customers.Rows.Add(id);
+                }
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter
+                    {
+                            ParameterName = "@CustomerIds",
+                            SqlDbType = SqlDbType.Structured,
+                            TypeName = "IntListType",
+                            Value = customers
+                    }
+
+                };
+
+                int rowAffected = context.ExecuteNonQuery("DeleteCustomers", parameters, true);
+                if (rowAffected > 0)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.StatusCode = HttpStatusCode.InternalServerError;
                 response.ErrorMessages = new List<string>() { ex.ToString() };
             }
             return response;

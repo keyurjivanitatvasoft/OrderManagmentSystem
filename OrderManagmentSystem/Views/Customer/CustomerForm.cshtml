@@ -4,77 +4,107 @@
 @model CustomerDetails;
 <div class="row">
     <div>
-        @if (@Model.CustomerId!=0)
+        @if (@Model.CustomerId != 0)
         {
             <h1>Edit Customer</h1>
-        }else
+        }
+        else
         {
             <h1>Add Customer</h1>
         }
     </div>
-    <form asp-action="CreateCustomer" asp-controller="Customer" class="col-8" method="post">
-    <input type="hidden" asp-for="@Model.CustomerId" />
-    <div class="col-lg">
-        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.CustomerFirstName" class="form-control border-0 bg-transparent" 
-                   id="firstname">
-            <label for="firstname">First Name</label>
+    <form asp-action="CreateCustomer" asp-controller="Customer" class="col-8" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="@Model.CustomerId" />
+        <input type="hidden" asp-for="@Model.Photo" />
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+                <input type="text" asp-for="@Model.CustomerFirstName" class="form-control border-0 bg-transparent"
+                       id="firstname">
+                <label for="firstname">First Name</label>
 
-        </div>
+            </div>
             <span class="text-danger" asp-validation-for="@Model.CustomerFirstName"></span>
-    </div>
-    <div class="col-lg">
-        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+        </div>
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
                 <input type="text" asp-for="@Model.CustomerLastName" class="form-control border-0 bg-transparent"
                        id="lastname">
-            <label for="lastname">Last Name</label>
+                <label for="lastname">Last Name</label>
 
-        </div>
+            </div>
             <span class="text-danger" asp-validation-for="@Model.CustomerLastName"></span>
-    </div>
-    <div class="col-lg">
-        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.EmailId" class="form-control border-0 bg-transparent" 
-                   id="email">
-            <label for="email">Email</label>
-
         </div>
-         <span class="text-danger" asp-validation-for="@Model.EmailId"></span>
-    </div>
-    <div class="col-lg">
-        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.PhoneNumber" class="form-control border-0 bg-transparent"
-                   id="phoneNumber">
-            <label for="phoneNumber">Phone Number</label>
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+                <input type="text" asp-for="@Model.EmailId" class="form-control border-0 bg-transparent"
+                       id="email">
+                <label for="email">Email</label>
 
+            </div>
+            <span class="text-danger" asp-validation-for="@Model.EmailId"></span>
         </div>
-         <span class="text-danger" asp-validation-for="@Model.PhoneNumber"></span>
-    </div>
-    <div class="col-lg">
-        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.Address" class="form-control border-0 bg-transparent" 
-                   id="address">
-            <label for="address">Addess</label>
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+                <input type="text" asp-for="@Model.PhoneNumber" class="form-control border-0 bg-transparent"
+                       id="phoneNumber">
+                <label for="phoneNumber">Phone Number</label>
 
+            </div>
+            <span class="text-danger" asp-validation-for="@Model.PhoneNumber"></span>
         </div>
-         <span class="text-danger" asp-validation-for="@Model.Address"></span>
-    </div>
+        <div class="col-lg">
+            <div class="d-flex form-floating border-muted rounded border me-2 my-2">
+                <input type="file"  accept=".jpg,.jpeg,.png" name="ProfilePhoto" class="form-control border-0 bg-transparent" onchange="previewImage(event)" id="profilePic">
+                <label class="px-1 py-2" for="profilePic">Profile Picture</label>
+            </div>
+            <span class="text-danger" asp-validation-for="@Model.Photo"></span>
+        </div>
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+                <input type="text" asp-for="@Model.Address" class="form-control border-0 bg-transparent"
+                       id="address">
+                <label for="address">Addess</label>
 
+            </div>
+            <span class="text-danger" asp-validation-for="@Model.Address"></span>
+        </div>
+        <div id="imagePreview">
+            @if (Model.Photo != null && Model.Photo.Length > 0)
+            {
+                <img  class="customerProfilePic"  src="@Model.Photo"  />
+            }
+        </div>
         <span class="text-danger" asp-validation-for="@Model.CustomerId"></span>
-    <div class="row gx-0 my-3 flex-row">
-        <button type="submit" class="col-2 btn btn-primary m-2">
-            @if (Model.CustomerId == 0)
-            {
-                <span>submit</span>
-            }
-            else
-            {
-                <span>Save Changes</span>
-            }
-        </button>
-        
-        <a asp-action="CustomerList" asp-controller="Customer" class="col-2 btn btn-danger m-2">Cancel</a>
+        <div class="row gx-0 my-3 flex-row">
+            <button type="submit" class="col-2 btn btn-primary m-2">
+                @if (Model.CustomerId == 0)
+                {
+                    <span>submit</span>
+                }
+                else
+                {
+                    <span>Save Changes</span>
+                }
+            </button>
 
-    </div>
-</form>
+            <a asp-action="CustomerList" asp-controller="Customer" class="col-2 btn btn-danger m-2">Cancel</a>
+
+        </div>
+    </form>
 </div>
+<script>
+    $(document).ready(function () {
+        $('#profilePic').on('change', function (event) {
+            var file = event.target.files[0];
+            if (!file) return;
+
+            var reader = new FileReader();
+            reader.onload = function () {
+                imagePreview.empty(); 
+                imagePreview.append('<img src="' + reader.result + '" alt="Uploaded Image" class="customerProfilePic">');
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+

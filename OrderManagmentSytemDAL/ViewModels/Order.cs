@@ -27,5 +27,6 @@ namespace OrderManagmentSytemDAL.ViewModels
         [Required(ErrorMessage = "Customer ID is required")]
         [Range(1, int.MaxValue, ErrorMessage = "Customer ID must be greater than 0")]
         public int CustomerId {  get; set; }
+
     }
 }

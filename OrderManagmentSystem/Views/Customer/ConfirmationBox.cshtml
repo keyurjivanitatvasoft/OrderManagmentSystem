@@ -1,6 +1,10 @@
 ﻿<div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-        <div class="modal-body text-center text-black">
+        <form class="modal-body text-center text-black" asp-action="DeleteCustomer" asp-controller="Customer" method="post">
+            @foreach (var customerId in Model)
+            {
+                <input type="hidden" name="customerIds" value="@customerId" />
+            }
             <h1 class="p-3">
                 <i class="bi bi-person-x fs-1 text-danger"></i>
             </h1>
@@ -9,10 +13,10 @@
                 Are you sure want to Delete this Customer? once delete this Customer then you are not able to see this Customer.
             </p>
             <div class="text-center mt-4">
-                <a class="btn btn-danger  me-2 text-light " asp-action="DeleteCustomer" asp-controller="Customer" asp-route-customerId="@Model"> Delete </a>
+                <button type="submit" class="btn btn-danger  me-2 text-light "> Delete </button>
                 <button type="button" class="btn btn-outline-secondary ms-2" id="btncancel"> Cancel </button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 <script>

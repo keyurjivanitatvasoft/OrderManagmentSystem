@@ -24,7 +24,13 @@ namespace OrderManagmentSytemBAL.OrderRepositry
 
         #region customerOrderDetailsc (Task 3)
         Response CustomerOrderDetails();
-        #endregion 
+        #endregion
+
+        #region Task 4
+
+        Response OrdersExits(List<int> orderIds);
+        Response DeleteOrders(List<int> orderIds);
+        #endregion
 
     }
 }

@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
 }
 
 @using OrderManagmentSytemDAL.ViewModels;
@@ -15,58 +14,89 @@
             <h1>Add Order</h1>
         }
     </div>
-    <form asp-action="CreateOrder" asp-controller="Order" class="col-8" method="post">
-    <input type="hidden" asp-for="@Model.Order.OrderId" />
-    <div class="col-lg">
-        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.Order.ProductName" class="form-control border-0 bg-transparent"
-                   id="productname">
-            <label for="productname">Product Name</label>
+    <form asp-action="CreateOrder" asp-controller="Order" class="col-8" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="@Model.Order.OrderId" />
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+                <input type="text" asp-for="@Model.Order.ProductName" class="form-control border-0 bg-transparent"
+                       id="productname">
+                <label for="productname">Product Name</label>
 
+            </div>
+            <span class="text-danger" asp-validation-for="@Model.Order.ProductName"></span>
         </div>
-        <span class="text-danger" asp-validation-for="@Model.Order.ProductName"></span>
-    </div>
-    <div class="col-lg">
-        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.Order.Amount" class="form-control border-0 bg-transparent"
-                   id="amount">
-            <label for="amount">Amount</label>
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+                <input type="text" asp-for="@Model.Order.Amount" class="form-control border-0 bg-transparent"
+                       id="amount">
+                <label for="amount">Amount</label>
 
+            </div>
+            <span class="text-danger" asp-validation-for="@Model.Order.Amount"></span>
         </div>
-        <span class="text-danger" asp-validation-for="@Model.Order.Amount"></span>
-    </div>
-    <div class="col-lg">
-        <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
-            <input type="text" asp-for="@Model.Order.Quantity" class="form-control border-0 bg-transparent"
-                   id="quantity">
-            <label for="quantity">Quantity</label>
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+                <input type="text" asp-for="@Model.Order.Quantity" class="form-control border-0 bg-transparent"
+                       id="quantity">
+                <label for="quantity">Quantity</label>
 
+            </div>
+            <span class="text-danger" asp-validation-for="@Model.Order.Quantity"></span>
         </div>
-        <span class="text-danger" asp-validation-for="@Model.Order.Quantity"></span>
-    </div>
-    <div class="col-lg pe-2">
-           
-            <select class="form-select border" asp-for="@Model.Order.CustomerId">
-               @foreach(CustomerDetails customer in Model.CustomerDetails)
+        <div class="col-lg">
+            <div class="d-flex form-floating border-muted rounded border me-2 my-2">
+                <input type="file" name="ProfilePhoto" class="form-control border-0 bg-transparent" id="profilePic">
+                <label for="profilePic">Profile Picture</label>
+            </div>
+           @*  <span class="text-danger" asp-validation-for="@Model.ProfilePhoto"></span> *@
+        </div>
+        <div class="col-lg">
+            <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
+                <input type="text" class="form-control border-0 "
+                       id="totalamount" disabled>
+                <label for="totalamount">Total Amount</label>
+
+            </div>
+        </div>
+
+        <div class="col-lg pe-2">
+            <label for="customer">Select Customer :</label>
+            <select class="form-select border" id="customer" asp-for="@Model.Order.CustomerId">
+                @foreach (CustomerDetails customer in Model.CustomerDetails)
                 {
                     <option value="@customer.CustomerId">@customer.CustomerFirstName @customer.CustomerLastName</option>
                 }
             </select>
-    </div>
+        </div>
 
-    <div class="row gx-0 my-3">
-        <button type="submit" class="btn btn-primary m-2 col-2">
-            @if (Model.Order.OrderId == 0)
-            {
-                <span>submit</span>
-            }
-            else
-            {
-                <span>Save Changes</span>
-            }
-        </button>
-        <a asp-action="OrderList" asp-controller="Order" class="col-2 btn btn-danger m-2">Cancel</a>
+        <div class="row gx-0 my-3">
+            <button type="submit" class="btn btn-primary m-2 col-2">
+                @if (Model.Order.OrderId == 0)
+                {
+                    <span>submit</span>
+                }
+                else
+                {
+                    <span>Save Changes</span>
+                }
+            </button>
+            <a asp-action="OrderList" asp-controller="Order" class="col-2 btn btn-danger m-2">Cancel</a>
 
-    </div>
-</form>
+        </div>
+    </form>
 </div>
+
+
+<script>
+    function fillTotalAmount() { 
+        var quantity = $('#quantity').val();
+        var amount = $('#amount').val();
+        $('#totalamount').val(amount * quantity);
+
+    }
+    $(document).ready(function () {
+        fillTotalAmount();
+        $('#quantity').on('change', fillTotalAmount);
+        $('#amount').on('change', fillTotalAmount);
+    });
+</script>

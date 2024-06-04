@@ -62,12 +62,20 @@ namespace OrderManagmentSytemDAL.DbContext
                 return Entities;
             }
         }
-        public T QuerySingle<T>(string query,object parameters=null)
+        public T QuerySingle<T>(string query,object parameters=null, bool IsStoreProcedure = false)
         {
             using (var connection = CreateConnection())
             {
                 connection.Open();
-                T entity = connection.QuerySingle<T>(query, parameters);
+                T entity;
+                if (IsStoreProcedure)
+                {
+                    entity = connection.QuerySingle<T>(query, parameters, commandType: CommandType.StoredProcedure);
+                }
+                else
+                {
+                    entity = connection.QuerySingle<T>(query, parameters);
+                }
                 connection.Close();
                 return entity;
             }

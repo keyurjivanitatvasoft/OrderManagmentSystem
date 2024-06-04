@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace OrderManagmentSytemDAL.ViewModels
 {
     public class CustomerDetails
     {
-        public int CustomerId {  get; set; }
+        public int CustomerId { get; set; }
 
         [Required(ErrorMessage = "First name is required")]
         [RegularExpression(@"^\s*[a-zA-Z]+\s*$", ErrorMessage = "First name must contain only letters.")]
@@ -22,12 +23,15 @@ namespace OrderManagmentSytemDAL.ViewModels
 
         [Required(ErrorMessage = "Email address is required")]
         [EmailAddress(ErrorMessage = "Invalid email address")]
-        public string EmailId{ get; set; }
+        public string EmailId { get; set; }
 
         [Required(ErrorMessage = "Phone number is required")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "Invalid phone number format")]
         [RegularExpression(@"^\s*\d{10}\s*$", ErrorMessage = "Phone number must be 10 digits")]
-        public string PhoneNumber{ get; set; }
-        public string Address{ get; set; }
+        public string PhoneNumber { get; set; }
+        public string? Address { get; set; }
+
+        public string? Photo {get;set;} 
+
     }
 }

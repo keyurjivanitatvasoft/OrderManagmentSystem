@@ -229,5 +229,74 @@ namespace OrderManagmentSytemBAL.OrderRepositry
         }
         #endregion
 
+        #region Task 4
+
+        public Response OrdersExits(List<int> orderIds)
+        {
+            Response response = new Response();
+            try
+            {
+                DataTable orders = new DataTable();
+                orders.Columns.Add(new DataColumn("Value", typeof(int)));
+                foreach (var id in orderIds)
+                {
+                    orders.Rows.Add(id);
+                }
+                var parameters = new DynamicParameters();
+                parameters.Add("@OrderIds", orders.AsTableValuedParameter("IntListType"));
+                int ordersCount = context.QuerySingle<int>("OrdersExits", parameters, true);
+                if(ordersCount == orderIds.Count())
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.BadRequest;
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+
+        public Response DeleteOrders(List<int> orderIds)
+        {
+            Response response = new Response();
+            try
+            {
+                DataTable orders = new DataTable();
+                orders.Columns.Add(new DataColumn("Value", typeof(int)));
+                foreach (var id in orderIds)
+                {
+                    orders.Rows.Add(id);
+                }
+                var parameters = new DynamicParameters();
+                parameters.Add("@OrderIds", orders.AsTableValuedParameter("IntListType"));
+                int rowsaffected = context.Execute("DeleteOrders", parameters, true);
+                if (rowsaffected>0)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.BadRequest;
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+        #endregion
+
     }
 }

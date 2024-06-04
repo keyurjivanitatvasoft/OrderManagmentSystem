@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     Layout = "_Layout";
 }
 @using OrderManagmentSytemDAL.ViewModels;
@@ -9,21 +8,22 @@
 </div>
 <div class="d-flex justify-content-end">
     <a asp-action="CreateCustomer" asp-controller="Customer" class="btn btn-outline-primary">Add Customer</a>
-    <button type="button" onclick="DeletePopUpOpen()" id="btnDeleteCustomer" class="btn btn-danger mx-2" disabled>Delete Customers</button>
+    <button type="button" onclick="deleteMultipleCustomers()" id="btnDeleteCustomer" class="btn btn-danger mx-2" disabled>Delete Customers</button>
 </div>
 
 @if (Model.IsSuccess && Model.Result is IEnumerable<CustomerDetails>)
 {
     IEnumerable<CustomerDetails> customers = Model.Result as IEnumerable<CustomerDetails>;
-    
+
     if (customers.Any())
     {
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col">
-                        <input type="checkbox" onclick="AllFileChecked()" id="checkbox-All-customer" />
+                        <input type="checkbox" onchange="checkAllCustomers()" id="checkbox-All-customers" />
                     </th>
+                    <th scope="col">Photo</th>
                     <th scope="col">First Name</th>
                     <th scope="col">Last Name</th>
                     <th scope="col">Email</th>
@@ -36,9 +36,12 @@
                 @foreach (CustomerDetails customer in customers)
                 {
                     <tr>
-                        <th scope="row">
-                            <input name="SelectedFiles" class="checkbox-customer" onchange="checkedforbutton()" type="checkbox" value="@customer.CustomerId" />
-                        </th>
+                        <td scope="row">
+                            <input class="checkbox-customer" onchange="checkCustomer()" type="checkbox" value="@customer.CustomerId" />
+                        </td>
+                        <td>
+                            <img class="customerProfilePic" src="@customer.Photo"  alt="No pic"  />
+                        </td>
                         <td>@customer.CustomerFirstName</td>
                         <td>@customer.CustomerLastName</td>
                         <td>@customer.EmailId</td>
@@ -48,11 +51,11 @@
                             <a asp-action="EditCustomer" asp-controller="Customer" asp-route-customerId="@customer.CustomerId" type="button" class="btn btn-primary">Edit</a>
                             <!--
                                 <a asp-action="DeleteCustomer" asp-controller="Customer" asp-route-customerId="@customer.CustomerId" type="button" class="btn btn-danger">Delete</a> -->
-                            <button type="button" onclick="DeletePopUpOpen(@customer.CustomerId)"  class="btn btn-danger">Delete</button>
+                            <button type="button" onclick="deleteCustomer(@customer.CustomerId)" class="btn btn-danger">Delete</button>
                         </td>
                     </tr>
                 }
-                
+
             </tbody>
         </table>
     }
@@ -66,57 +69,73 @@ else
     <h1>Their Was Some Issue</h1>
 }
 <script>
-        
-        function DeletePopUpOpen(CustomerId){
-            $.ajax({
-                url: '/Customers/deleteconfirmation?customerId=' + CustomerId,
-                type: 'Get',
-                contentType: false,
-                success: function (data) {
-                    if (data.message == null) {
-                        $('#DeletePopUp').html('');
-                        $('#DeletePopUp').html(data);
-                        $('#DeletePopUp').modal("show");
-                    } else {
-                        console.log(data.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.log(error);
-                }
-            });
-        }
-    function checkedforbutton() {
-
-        let inputs = document.querySelectorAll('.checkbox-customer');
-        for (let i = 0; i < inputs.length; i++) {
-            if (inputs[i].checked) {
+    function checkCustomer() {
+        let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
+        for (let i = 0; i < CustomersCheckBox.length; i++) {
+            if (CustomersCheckBox[i].checked) {
                 document.getElementById('btnDeleteCustomer').disabled = false;
                 return;
             }
             else {
-                document.getElementById('checkbox-All-customer').checked = false;
+                document.getElementById('checkbox-All-customers').checked = false;
             }
         }
         document.getElementById('btnDeleteCustomer').disabled = true;
     }
 
-    function AllFileChecked() {
-        let inputs = document.getElementById('checkbox-All-customer');
-        if (inputs.checked) {
-            let inputs = document.querySelectorAll('.checkbox-customer');
-            for (let i = 0; i < inputs.length; i++) {
-                inputs[i].checked = true;
+    function checkAllCustomers() {
+        let AllCustomersCheckBox = document.getElementById('checkbox-All-customers');
+        if (AllCustomersCheckBox.checked) {
+            let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
+            for (let i = 0; i < CustomersCheckBox.length; i++) {
+                CustomersCheckBox[i].checked = true;
             }
 
             document.getElementById('btnDeleteCustomer').disabled = false;
         } else {
-            let inputs = document.querySelectorAll('.checkbox-customer');
-            for (let i = 0; i < inputs.length; i++) {
-                inputs[i].checked = false;
+            let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
+            for (let i = 0; i < CustomersCheckBox.length; i++) {
+                CustomersCheckBox[i].checked = false;
             }
             document.getElementById('btnDeleteCustomer').disabled = true;
         }
 
     }
+    function deleteCustomer(customerId) {
+        DeletePopUp([customerId]);
+    }
+
+    function deleteMultipleCustomers() {
+        let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
+        let CustomerIds = [];
+        CustomersCheckBox.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                CustomerIds.push(checkbox.value);
+            }
+        });
+        console.log(CustomerIds);
+        DeletePopUp(CustomerIds);
+    }
+
+
+    function DeletePopUp(CustomerIds) {
+        $.ajax({
+            url: '/Customers/deleteconfirmation',
+            type: 'POST',
+            data: { customerIds: CustomerIds },
+            success: function (data) {
+                if (data.message == null) {
+                    $('#DeletePopUp').html('');
+                    $('#DeletePopUp').html(data);
+                    $('#DeletePopUp').modal("show");
+                } else {
+                    console.log(data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+    
 </script>

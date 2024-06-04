@@ -8,7 +8,7 @@
 </div>
 <div class="d-flex justify-content-end">
     <a asp-action="CreateOrder" asp-controller="Order" class="btn btn-outline-primary">Add Order</a>
-    <button type="button" onclick="DeletePopUpOpen()" id="btnDeleteOrder" class="btn btn-danger mx-2" disabled>Delete Orders</button>
+    <button type="button"  id="btnDeleteOrder" onclick="deleteMultipleOrders()" class="btn btn-danger mx-2" disabled>Delete Orders</button>
 </div>
 @if (Model.IsSuccess && Model.Result is IEnumerable<OrderWithCustomer>)
 {
@@ -20,7 +20,7 @@
             <thead>
                 <tr>
                     <th scope="col">
-                        <input type="checkbox" onclick="AllFileChecked()" id="checkbox-All-orders" />
+                        <input type="checkbox" onchange="checkAllOrders()" id="checkbox-All-orders" />
                     </th>
                     <th scope="col">Product Name</th>
                     <th scope="col">Amount</th>
@@ -34,7 +34,7 @@
                 {
                     <tr>
                         <th scope="row">
-                            <input name="SelectedFiles" class="checkbox-order" onchange="checkedforbutton()" type="checkbox" value="@order.OrderId" />
+                            <input  class="checkbox-order" onchange="CheckOrder()" type="checkbox" value="@order.OrderId" />
                         </th>
                         <td>@order.ProductName</td>
                         <td>@order.Amount</td>
@@ -43,7 +43,7 @@
                         <td>
                             <a asp-action="EditOrder" asp-controller="Order" asp-route-orderId="@order.OrderId" type="button" class="btn btn-primary">Edit</a>
                             <!--<a asp-action="DeleteOrder" asp-controller="Order" asp-route-orderId="@order.OrderId" type="button" class="btn btn-danger">Delete</a>-->
-                            <button type="button" onclick="DeletePopUpOpen(@order.OrderId)" class="btn btn-danger">Delete</button>
+                            <button type="button" onclick="deleteOrder(@order.OrderId)" class="btn btn-danger">Delete</button>
                         </td>
                     </tr>
                 }
@@ -62,11 +62,62 @@ else
 }
 <script>
 
-    function DeletePopUpOpen(orderId) {
+    
+
+    function CheckOrder() {
+
+        let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
+        for (let i = 0; i < OrdersCheckBox.length; i++) {
+            if (OrdersCheckBox[i].checked) {
+                document.getElementById('btnDeleteOrder').disabled = false;
+                return;
+            }
+            else {
+                document.getElementById('checkbox-All-orders').checked = false;
+            }
+        }
+        document.getElementById('btnDeleteOrder').disabled = true;
+    }
+
+    function checkAllOrders() {
+        let AllOrdersCheckBox = document.getElementById('checkbox-All-orders');
+        if (AllOrdersCheckBox.checked) {
+            let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
+            for (let i = 0; i < OrdersCheckBox.length; i++) {
+                OrdersCheckBox[i].checked = true;
+            }
+
+            document.getElementById('btnDeleteOrder').disabled = false;
+        } else {
+            let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
+            for (let i = 0; i < OrdersCheckBox.length; i++) {
+                OrdersCheckBox[i].checked = false;
+            }
+            document.getElementById('btnDeleteOrder').disabled = true;
+        }
+
+    }
+    function deleteOrder(orderId) {
+        DeletePopUp([orderId]);
+    } 
+
+    function deleteMultipleOrders() {
+        let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
+        let OrderIds = [];
+        OrdersCheckBox.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                OrderIds.push(checkbox.value);
+            }
+        });
+        DeletePopUp(OrderIds);
+    }
+
+    function DeletePopUp(OrderIds)
+    {
         $.ajax({
-            url: '/Orders/deleteconfirmation?orderId=' + orderId,
-            type: 'Get',
-            contentType: false,
+            url: '/Orders/deleteconfirmation',
+            type: 'POST',
+            data: { orderIds: OrderIds },
             success: function (data) {
                 if (data.message == null) {
                     $('#DeletePopUp').html('');
@@ -80,39 +131,5 @@ else
                 console.log(error);
             }
         });
-    }
-
-    function checkedforbutton() {
-
-        let inputs = document.querySelectorAll('.checkbox-order');
-        for (let i = 0; i < inputs.length; i++) {
-            if (inputs[i].checked) {
-                document.getElementById('btnDeleteOrder').disabled = false;
-                return;
-            }
-            else {
-                document.getElementById('checkbox-All-orders').checked = false;
-            }
-        }
-        document.getElementById('btnDeleteOrder').disabled = true;
-    }
-
-    function AllFileChecked() {
-        let inputs = document.getElementById('checkbox-All-orders');
-        if (inputs.checked) {
-            let inputs = document.querySelectorAll('.checkbox-order');
-            for (let i = 0; i < inputs.length; i++) {
-                inputs[i].checked = true;
-            }
-
-            document.getElementById('btnDeleteOrder').disabled = false;
-        } else {
-            let inputs = document.querySelectorAll('.checkbox-order');
-            for (let i = 0; i < inputs.length; i++) {
-                inputs[i].checked = false;
-            }
-            document.getElementById('btnDeleteOrder').disabled = true;
-        }
-
     }
 </script>

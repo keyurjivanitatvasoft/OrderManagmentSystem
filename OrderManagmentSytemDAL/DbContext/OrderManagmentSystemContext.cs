@@ -19,25 +19,26 @@ namespace OrderManagmentSytemDAL.DbContext
             _connectionString = connectionString;
         }
 
-        public int ExecuteNonQuery(string query,SqlParameter[] parameters,bool IsStoreProcedure)
+        public int ExecuteNonQuery(string query, SqlParameter[] parameters, bool IsStoreProcedure)
         {
+            int rowsAffected = 0;
             using (var connection = new SqlConnection(_connectionString))
-            using (var command = new SqlCommand(query, connection))
             {
-                if(IsStoreProcedure)
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                }
-                if (parameters != null)
-                {
-                    command.Parameters.AddRange(parameters);
-                }
-
                 connection.Open();
-                int rowsAffected = command.ExecuteNonQuery();
-                connection.Close();
-                return rowsAffected;
+                using (var command = new SqlCommand(query, connection))
+                {
+                    if (IsStoreProcedure)
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                    }
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+                    rowsAffected = command.ExecuteNonQuery();
+                }
             }
+            return rowsAffected;
         }
 
         public DataTable ExecuteQuery(string query, params SqlParameter[] parameters)
@@ -48,7 +49,6 @@ namespace OrderManagmentSytemDAL.DbContext
             {
                 using (var command = new SqlCommand(query, connection))
                 {
-                    connection.Open();
                     using (var adapter = new SqlDataAdapter(command))
                     {
                         if (parameters != null)
@@ -58,7 +58,6 @@ namespace OrderManagmentSytemDAL.DbContext
 
                         adapter.Fill(dataTable);
                     }
-                    connection.Close();
                 }
             }
 
@@ -70,7 +69,6 @@ namespace OrderManagmentSytemDAL.DbContext
 
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var adapter = new SqlDataAdapter(command))
@@ -78,17 +76,15 @@ namespace OrderManagmentSytemDAL.DbContext
                         adapter.Fill(dataTable);
                     }
                 }
-                connection.Close() ;
             }
             return dataTable;
         }
-        public DataTable ExecuteReader(string query, SqlParameter[] parameters,bool IsStoreProcedure)
+        public DataTable ExecuteReader(string query, SqlParameter[] parameters, bool IsStoreProcedure)
         {
             var dataTable = new DataTable();
 
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
                 using (var command = new SqlCommand(query, connection))
                 {
                     if (IsStoreProcedure)
@@ -105,10 +101,32 @@ namespace OrderManagmentSytemDAL.DbContext
                         adapter.Fill(dataTable);
                     }
                 }
-                connection.Close() ;
             }
             return dataTable;
         }
+        public T ExecuteScalar<T>(string query, SqlParameter[] parameters, bool IsStoreProcedure)
+        {
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                using (var command = new SqlCommand(query, connection))
+                {
+                    if (IsStoreProcedure)
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                    }
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+                    
+                    object result = command.ExecuteScalar();
+                    return (T)Convert.ChangeType(result, typeof(T));
+                }
+            }
+        }
+
 
     }
 }
