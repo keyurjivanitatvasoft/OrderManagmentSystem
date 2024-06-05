@@ -1,4 +1,4 @@
-name: .NET CI/CD
+name: CI/CD
 'on':
   push:
     branches:
@@ -9,27 +9,49 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v1
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.x
       - name: Restore dependencies
         run: dotnet restore
-      - name: Build the project
-        run: dotnet build --configuration Release
-      - name: Test the project
-        run: dotnet test
+      - name: Build
+        run: dotnet build --configuration Release --output ./build-output
+      - name: Publish artifact
+        run: dotnet publish --configuration Release --output ./publish
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: ./publish/
   deploy:
-    needs: build
     runs-on: windows-latest
+    needs: build
+    if: github.ref == 'refs/heads/master'
     steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: app
+          path: ./publish/
       - name: SSH into server and deploy
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.5.5
         with:
           host: '${{ secrets.SERVER_HOST }}'
           username: '${{ secrets.SERVER_USERNAME }}'
           key: '${{ secrets.SERVER_SSH_KEY }}'
           script: |
             cd D:\Projects\IISConfiguration
-            git pull origin master
+            git pull origin main
             dotnet publish -c Release -o ./published
+      - name: Deploy to Local PC
+        run: |
+          $destinationFolder = "D:\Projects\IISConfiguration"
+
+           Write-Host "Creating destination folder if it doesn't exist: $destinationFolder"
+           if (!(Test-Path -Path $destinationFolder -PathType Container)) {
+           New-Item -Path $destinationFolder -ItemType Directory -Force
+           }
+           Write-Host "Current directory: $(Get-Location)/publish/"
+           Write-Host "Copying files to $destinationFolder -Path ./publish/*"
+           Copy-Item -Path ./publish/* -Destination $destinationFolder -Recurse
