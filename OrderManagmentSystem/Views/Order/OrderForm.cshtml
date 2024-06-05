@@ -43,13 +43,7 @@
             </div>
             <span class="text-danger" asp-validation-for="@Model.Order.Quantity"></span>
         </div>
-        <div class="col-lg">
-            <div class="d-flex form-floating border-muted rounded border me-2 my-2">
-                <input type="file" name="ProfilePhoto" class="form-control border-0 bg-transparent" id="profilePic">
-                <label for="profilePic">Profile Picture</label>
-            </div>
-           @*  <span class="text-danger" asp-validation-for="@Model.ProfilePhoto"></span> *@
-        </div>
+        
         <div class="col-lg">
             <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
                 <input type="text" class="form-control border-0 "
@@ -98,5 +92,10 @@
         fillTotalAmount();
         $('#quantity').on('change', fillTotalAmount);
         $('#amount').on('change', fillTotalAmount);
+        
+        $('#customer').select2({
+            placeholder: 'Search for a customer',
+            allowClear: true
+        });
     });
 </script>

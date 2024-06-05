@@ -54,7 +54,7 @@
         </div>
         <div class="col-lg">
             <div class="d-flex form-floating border-muted rounded border me-2 my-2">
-                <input type="file"  accept=".jpg,.jpeg,.png" name="ProfilePhoto" class="form-control border-0 bg-transparent" onchange="previewImage(event)" id="profilePic">
+                <input type="file" accept=".jpg,.jpeg,.png" name="ProfilePhoto" class="form-control border-0 bg-transparent" onchange="previewImage(event)" id="profilePic">
                 <label class="px-1 py-2" for="profilePic">Profile Picture</label>
             </div>
             <span class="text-danger" asp-validation-for="@Model.Photo"></span>
@@ -71,7 +71,7 @@
         <div id="imagePreview">
             @if (Model.Photo != null && Model.Photo.Length > 0)
             {
-                <img  class="customerProfilePic"  src="@Model.Photo"  />
+                <img class="customerProfilePic" src="@Model.Photo" />
             }
         </div>
         <span class="text-danger" asp-validation-for="@Model.CustomerId"></span>
@@ -100,7 +100,7 @@
 
             var reader = new FileReader();
             reader.onload = function () {
-                imagePreview.empty(); 
+                imagePreview.empty();
                 imagePreview.append('<img src="' + reader.result + '" alt="Uploaded Image" class="customerProfilePic">');
             };
             reader.readAsDataURL(file);

@@ -37,7 +37,7 @@ namespace OrderManagmentSystem.Controllers
             OrderManagmentSytemDAL.ViewModels.CreateOrder createOrder = new CreateOrder();
             createOrder.CustomerDetails = customersResponse.Result as IEnumerable<CustomerDetails>;
             createOrder.Order = new Order();
-            createOrder.Order.CustomerId = createOrder.CustomerDetails.FirstOrDefault().CustomerId;
+            createOrder.Order.CustomerId = -1;
             return View("OrderForm", createOrder);
         }
 

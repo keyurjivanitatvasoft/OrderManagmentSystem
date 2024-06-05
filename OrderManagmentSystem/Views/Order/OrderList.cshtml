@@ -102,7 +102,7 @@ else
     } 
 
     function deleteMultipleOrders() {
-        let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
+        let OrdersCheckBox = $('.checkbox-order');
         let OrderIds = [];
         OrdersCheckBox.forEach(function (checkbox) {
             if (checkbox.checked) {
