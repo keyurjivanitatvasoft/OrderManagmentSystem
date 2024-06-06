@@ -2,16 +2,19 @@
 using OrderManagmentSytemBAL.CustomerRepositry;
 using OrderManagmentSytemDAL.ViewModels;
 using Microsoft.AspNetCore.Http.Features;
+using AspNetCoreHero.ToastNotification.Abstractions;
 namespace OrderManagmentSystem.Controllers
 {
     public class CustomerController : Controller
 
     {
         private readonly ICustomerRepositry customerRepositry;
+        private readonly INotyfService notyf;
 
-        public CustomerController(ICustomerRepositry customerRepositry)
+        public CustomerController(ICustomerRepositry customerRepositry,INotyfService notyfService)
         {
             this.customerRepositry = customerRepositry;
+            this.notyf = notyfService;
         }
 
         [HttpGet]
@@ -34,6 +37,7 @@ namespace OrderManagmentSystem.Controllers
             {
                 return View("CustomerForm", customers.First());
             }
+            notyf.Error("Customer not Found");
             return RedirectToAction("CustomerList");
         }
         [HttpPost]
@@ -45,6 +49,7 @@ namespace OrderManagmentSystem.Controllers
             {
                 return PartialView("ConfirmationBox", customerIds);
             }
+            notyf.Error("Customer not Found");
             return Json(new { message = "Customer Not Exits" });
         }
 
@@ -58,14 +63,13 @@ namespace OrderManagmentSystem.Controllers
                 Response customerDetails = customerRepositry.DeleteCustomers(customerIds);
                 if (customerDetails.IsSuccess)
                 {
+                    notyf.Success("Customer Deleted Successfully.");
                     return RedirectToAction("CustomerList");
                 }
-                else
-                {
-                    return PartialView("ConfirmationBox", customerIds);
-                }
+               
             }
-            return RedirectToAction("Privacy", "Home");
+            notyf.Error("Customer not Found");
+            return RedirectToAction("CustomerList");
         }
         [HttpGet]
         [Route("/Customers/Addcustomer")]
@@ -79,6 +83,11 @@ namespace OrderManagmentSystem.Controllers
         [Route("/Customers/Addcustomer")]
         public IActionResult CreateCustomer(CustomerDetails customerDetails, IFormFile? ProfilePhoto)
         {
+            if(customerDetails.CustomerId!=0 && !customerRepositry.CustomersExits(new List<int>(customerDetails.CustomerId)).IsSuccess)
+            {
+                notyf.Error("Customer not Found");
+                return RedirectToAction("CustomerList");
+            }
             if (!ModelState.IsValid)
             {
                 return View("CustomerForm", customerDetails);
@@ -112,7 +121,23 @@ namespace OrderManagmentSystem.Controllers
             Response response = customerRepositry.SaveCustomersSP(customerDetails, false);
             if (response.IsSuccess)
             {
+                if (customerDetails.CustomerId == 0)
+                {
+                    notyf.Success("Customer Add Successfully.");
+                }
+                else
+                {
+                    notyf.Success("Edit Customer Successfully.");
+                }
                 return RedirectToAction("CustomerList");
+            }
+            if (customerDetails.CustomerId == 0)
+            {
+                notyf.Error("Customer not Added");
+            }
+            else
+            {
+                notyf.Error("Customer not Edited");
             }
             return View("CustomerForm", customerDetails);
         }

@@ -214,7 +214,7 @@ namespace OrderManagmentSytemBAL.OrderRepositry
             Response response = new Response();
             try
             {
-                IEnumerable<CustomersOrderDetails> customersData = context.Query<CustomersOrderDetails>("customerOrderDetails", null, true);
+                IEnumerable<CustomersOrderDetails> customersData = context.Query<CustomersOrderDetails>("CustomerOrderDetails", null, true);
                 response.StatusCode = HttpStatusCode.OK;
                 response.IsSuccess = true;
                 response.Result = customersData;

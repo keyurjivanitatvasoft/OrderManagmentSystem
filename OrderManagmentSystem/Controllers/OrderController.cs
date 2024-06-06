@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Mvc;
 using OrderManagmentSytemBAL.CustomerRepositry;
 using OrderManagmentSytemBAL.OrderRepositry;
 using OrderManagmentSytemDAL.ViewModels;
@@ -9,23 +10,20 @@ namespace OrderManagmentSystem.Controllers
     {
         private readonly IOrderRepositry orderRepositry;
         private readonly ICustomerRepositry customerRepositry;
+        private readonly INotyfService notyf;
 
-        public OrderController(IOrderRepositry orderRepositry, ICustomerRepositry customerRepositry)
+        public OrderController(IOrderRepositry orderRepositry, ICustomerRepositry customerRepositry, INotyfService notyfService)
         {
             this.orderRepositry = orderRepositry;
             this.customerRepositry = customerRepositry;
+            this.notyf = notyfService;
         }
         [HttpGet]
         [Route("/Orders")]
         public IActionResult OrderList()
         {
-
             Response response = orderRepositry.SearchOrderSP(new Order());
-            if (response != null && response.IsSuccess)
-            {
-                return View(response);
-            }
-            return View("Index", "Home");
+            return View(response);
         }
 
 
@@ -34,7 +32,7 @@ namespace OrderManagmentSystem.Controllers
         public IActionResult CreateOrder()
         {
             Response customersResponse = customerRepositry.SearchCustomerSP(new CustomerDetails());
-            OrderManagmentSytemDAL.ViewModels.CreateOrder createOrder = new CreateOrder();
+            CreateOrder createOrder = new CreateOrder();
             createOrder.CustomerDetails = customersResponse.Result as IEnumerable<CustomerDetails>;
             createOrder.Order = new Order();
             createOrder.Order.CustomerId = -1;
@@ -43,8 +41,14 @@ namespace OrderManagmentSystem.Controllers
 
         [HttpPost]
         [Route("/Orders/Addorder")]
-        public IActionResult CreateOrder(Order order )
+        public IActionResult CreateOrder(Order order)
         {
+
+            if (order.OrderId != 0 && !orderRepositry.OrdersExits(new List<int>(order.OrderId)).IsSuccess)
+            {
+                notyf.Error("Order not Found");
+                return RedirectToAction("OrderList");
+            }
             if (!ModelState.IsValid)
             {
                 Response customersResponse = customerRepositry.SearchCustomerSP(new CustomerDetails());
@@ -58,11 +62,18 @@ namespace OrderManagmentSystem.Controllers
                 return View("OrderForm", createOrder);
             }
 
-
             Response response = orderRepositry.SaveOrdersSP(order, false);
 
             if (response.IsSuccess)
             {
+                if (order.OrderId == 0)
+                {
+                    notyf.Success("Order Add Successfully.");
+                }
+                else
+                {
+                    notyf.Success("Edit Order Successfully.");
+                }
                 return RedirectToAction("OrderList");
             }
             else
@@ -73,6 +84,14 @@ namespace OrderManagmentSystem.Controllers
                     CustomerDetails = customersResponse.Result as IEnumerable<CustomerDetails>,
                     Order = order
                 };
+                if (order.OrderId == 0)
+                {
+                    notyf.Error("Order not Added");
+                }
+                else
+                {
+                    notyf.Error("Order not Edited");
+                }
                 return View("OrderForm", createOrder);
             }
         }
@@ -100,11 +119,12 @@ namespace OrderManagmentSystem.Controllers
                         ProductName = orders.First().ProductName,
                         Quantity = orders.First().Quantity,
                         Amount = orders.First().Amount,
-                        CustomerId= orders.First().CustomerId,
+                        CustomerId = orders.First().CustomerId,
                     },
                 };
                 return View("OrderForm", viewModel);
             }
+            notyf.Error("Order not Found");
             return RedirectToAction("OrderList");
         }
         [HttpPost]
@@ -113,10 +133,11 @@ namespace OrderManagmentSystem.Controllers
         {
             Response order = orderRepositry.OrdersExits(orderIds);
 
-            if (order.IsSuccess )
+            if (order.IsSuccess)
             {
                 return PartialView("ConfirmationBox", orderIds);
             }
+            notyf.Error("Order not Found");
             return Json(new { message = "Order Not Exits" });
         }
 
@@ -131,17 +152,19 @@ namespace OrderManagmentSystem.Controllers
                 Response DeleteOrders = orderRepositry.DeleteOrders(orderIds);
                 if (DeleteOrders.IsSuccess)
                 {
-                    return RedirectToAction("OrderList");
+                    notyf.Success("Order deleted successfully");
                 }
                 else
                 {
-                    return PartialView("ConfirmationBox", orderIds);
+                    notyf.Error("Order not Deleted");
                 }
+                return RedirectToAction("OrderList");
             }
-            return RedirectToAction("Privacy", "Home");
+            notyf.Error("Order not Found");
+            return RedirectToAction("OrderList");
         }
 
-        
+
         [HttpGet]
         [Route("/customerorders")]
         public IActionResult CustomersOrder()

@@ -26,6 +26,7 @@ select * From [Order];
 
 select * From [Order] join Customer on [Order].customer_id=Customer.customer_id where [Order].Isdelete=0;
 update Customer set Isdelete=0;
+update [Order] set Isdelete=0;
 --UPDATE customer SET phonenumber = '8545785869' WHERE customer_id = 5;
 
 insert into Customer (firstName,lastName,emailId,phoneNumber,address) values ('keyur','jivani','keyurpatel@gmail.com','8141351199','morbi,india') ;
@@ -211,12 +212,13 @@ END;
 Select * From Customer where customer_id!=5 AND (emailId='parth@gamil.com' OR phoneNumber='8545785869' )
 
 --for Customer orderdetails
-CREATE OR ALTER PROCEDURE customerOrderDetails 
+CREATE OR ALTER PROCEDURE CustomerOrderDetails 
 AS
 BEGIN
 	SELECT c.CustomerId as CustomerId, c.FirstName AS FirstName, c.LastName AS LastName, SUM(o.amount) AS TotalAmount
 	FROM Customer c
 	LEFT JOIN [Order] o ON c.CustomerId = o.CustomerId
+	WHERE c.IsDelete=0
 	GROUP BY c.CustomerId, c.FirstName, c.LastName
 
 END;

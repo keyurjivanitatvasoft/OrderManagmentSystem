@@ -92,19 +92,24 @@
         </div>
     </form>
 </div>
-<script>
-    $(document).ready(function () {
-        $('#profilePic').on('change', function (event) {
-            var file = event.target.files[0];
-            if (!file) return;
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#profilePic').on('change', function (event) {
+                var file = event.target.files[0];
+                if (!file) return;
 
-            var reader = new FileReader();
-            reader.onload = function () {
-                imagePreview.empty();
-                imagePreview.append('<img src="' + reader.result + '" alt="Uploaded Image" class="customerProfilePic">');
-            };
-            reader.readAsDataURL(file);
+                var reader = new FileReader();
+                reader.onload = function () {
+                    imagePreview.empty();
+                    imagePreview.append('<img src="' + reader.result + '" alt="Uploaded Image" class="customerProfilePic">');
+                };
+                reader.readAsDataURL(file);
+            });
         });
-    });
-</script>
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
 

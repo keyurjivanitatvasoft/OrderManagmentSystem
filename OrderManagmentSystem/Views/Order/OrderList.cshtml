@@ -8,7 +8,7 @@
 </div>
 <div class="d-flex justify-content-end">
     <a asp-action="CreateOrder" asp-controller="Order" class="btn btn-outline-primary">Add Order</a>
-    <button type="button"  id="btnDeleteOrder" onclick="deleteMultipleOrders()" class="btn btn-danger mx-2" disabled>Delete Orders</button>
+    <button type="button" id="btnDeleteOrder" onclick="deleteMultipleOrders()" class="btn btn-danger mx-2" disabled>Delete Orders</button>
 </div>
 @if (Model.IsSuccess && Model.Result is IEnumerable<OrderWithCustomer>)
 {
@@ -34,7 +34,7 @@
                 {
                     <tr>
                         <th scope="row">
-                            <input  class="checkbox-order" onchange="CheckOrder()" type="checkbox" value="@order.OrderId" />
+                            <input class="checkbox-order" onchange="CheckOrder()" type="checkbox" value="@order.OrderId" />
                         </th>
                         <td>@order.ProductName</td>
                         <td>@order.Amount</td>
@@ -60,76 +60,77 @@ else
 {
     <h1>Their Was Some Issue</h1>
 }
-<script>
+@section Scripts {
+    <script>
 
-    
 
-    function CheckOrder() {
 
-        let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
-        for (let i = 0; i < OrdersCheckBox.length; i++) {
-            if (OrdersCheckBox[i].checked) {
-                document.getElementById('btnDeleteOrder').disabled = false;
-                return;
-            }
-            else {
-                document.getElementById('checkbox-All-orders').checked = false;
-            }
-        }
-        document.getElementById('btnDeleteOrder').disabled = true;
-    }
+        function CheckOrder() {
 
-    function checkAllOrders() {
-        let AllOrdersCheckBox = document.getElementById('checkbox-All-orders');
-        if (AllOrdersCheckBox.checked) {
             let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
             for (let i = 0; i < OrdersCheckBox.length; i++) {
-                OrdersCheckBox[i].checked = true;
-            }
-
-            document.getElementById('btnDeleteOrder').disabled = false;
-        } else {
-            let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
-            for (let i = 0; i < OrdersCheckBox.length; i++) {
-                OrdersCheckBox[i].checked = false;
+                if (OrdersCheckBox[i].checked) {
+                    document.getElementById('btnDeleteOrder').disabled = false;
+                    return;
+                }
+                else {
+                    document.getElementById('checkbox-All-orders').checked = false;
+                }
             }
             document.getElementById('btnDeleteOrder').disabled = true;
         }
 
-    }
-    function deleteOrder(orderId) {
-        DeletePopUp([orderId]);
-    } 
-
-    function deleteMultipleOrders() {
-        let OrdersCheckBox = $('.checkbox-order');
-        let OrderIds = [];
-        OrdersCheckBox.forEach(function (checkbox) {
-            if (checkbox.checked) {
-                OrderIds.push(checkbox.value);
-            }
-        });
-        DeletePopUp(OrderIds);
-    }
-
-    function DeletePopUp(OrderIds)
-    {
-        $.ajax({
-            url: '/Orders/deleteconfirmation',
-            type: 'POST',
-            data: { orderIds: OrderIds },
-            success: function (data) {
-                if (data.message == null) {
-                    $('#DeletePopUp').html('');
-                    $('#DeletePopUp').html(data);
-                    $('#DeletePopUp').modal("show");
-                } else {
-                    console.log(data.message);
+        function checkAllOrders() {
+            let AllOrdersCheckBox = document.getElementById('checkbox-All-orders');
+            if (AllOrdersCheckBox.checked) {
+                let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
+                for (let i = 0; i < OrdersCheckBox.length; i++) {
+                    OrdersCheckBox[i].checked = true;
                 }
-            },
-            error: function (xhr, status, error) {
-                console.log(error);
+
+                document.getElementById('btnDeleteOrder').disabled = false;
+            } else {
+                let OrdersCheckBox = document.querySelectorAll('.checkbox-order');
+                for (let i = 0; i < OrdersCheckBox.length; i++) {
+                    OrdersCheckBox[i].checked = false;
+                }
+                document.getElementById('btnDeleteOrder').disabled = true;
             }
-        });
-    }
-</script>
+
+        }
+        function deleteOrder(orderId) {
+            DeletePopUp([orderId]);
+        }
+
+        function deleteMultipleOrders() {
+            let OrdersCheckBox = $('.checkbox-order');
+            let OrderIds = [];
+            OrdersCheckBox.each(function () {
+                if (this.checked) {
+                    OrderIds.push(this.value);
+                }
+            });
+            DeletePopUp(OrderIds);
+        }
+
+        function DeletePopUp(OrderIds) {
+            $.ajax({
+                url: '/Orders/deleteconfirmation',
+                type: 'POST',
+                data: { orderIds: OrderIds },
+                success: function (data) {
+                    if (data.message == null) {
+                        $('#DeletePopUp').html('');
+                        $('#DeletePopUp').html(data);
+                        $('#DeletePopUp').modal("show");
+                    } else {
+                        console.log(data.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+}

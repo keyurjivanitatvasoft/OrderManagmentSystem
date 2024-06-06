@@ -40,7 +40,7 @@
                             <input class="checkbox-customer" onchange="checkCustomer()" type="checkbox" value="@customer.CustomerId" />
                         </td>
                         <td>
-                            <img class="customerProfilePic" src="@customer.Photo"  alt="No pic"  />
+                            <img class="customerProfilePic" src="@customer.Photo" alt="No pic" />
                         </td>
                         <td>@customer.CustomerFirstName</td>
                         <td>@customer.CustomerLastName</td>
@@ -68,73 +68,75 @@ else
 {
     <h1>Their Was Some Issue</h1>
 }
-<script>
-    function checkCustomer() {
-        let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
-        for (let i = 0; i < CustomersCheckBox.length; i++) {
-            if (CustomersCheckBox[i].checked) {
-                document.getElementById('btnDeleteCustomer').disabled = false;
-                return;
-            }
-            else {
-                document.getElementById('checkbox-All-customers').checked = false;
-            }
-        }
-        document.getElementById('btnDeleteCustomer').disabled = true;
-    }
-
-    function checkAllCustomers() {
-        let AllCustomersCheckBox = document.getElementById('checkbox-All-customers');
-        if (AllCustomersCheckBox.checked) {
+@section Scripts {
+    <script>
+        function checkCustomer() {
             let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
             for (let i = 0; i < CustomersCheckBox.length; i++) {
-                CustomersCheckBox[i].checked = true;
-            }
-
-            document.getElementById('btnDeleteCustomer').disabled = false;
-        } else {
-            let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
-            for (let i = 0; i < CustomersCheckBox.length; i++) {
-                CustomersCheckBox[i].checked = false;
+                if (CustomersCheckBox[i].checked) {
+                    document.getElementById('btnDeleteCustomer').disabled = false;
+                    return;
+                }
+                else {
+                    document.getElementById('checkbox-All-customers').checked = false;
+                }
             }
             document.getElementById('btnDeleteCustomer').disabled = true;
         }
 
-    }
-    function deleteCustomer(customerId) {
-        DeletePopUp([customerId]);
-    }
-
-    function deleteMultipleCustomers() {
-        let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
-        let CustomerIds = [];
-        CustomersCheckBox.forEach(function (checkbox) {
-            if (checkbox.checked) {
-                CustomerIds.push(checkbox.value);
-            }
-        });
-        DeletePopUp(CustomerIds);
-    }
-
-
-    function DeletePopUp(CustomerIds) {
-        $.ajax({
-            url: '/Customers/deleteconfirmation',
-            type: 'POST',
-            data: { customerIds: CustomerIds },
-            success: function (data) {
-                if (data.message == null) {
-                    $('#DeletePopUp').html('');
-                    $('#DeletePopUp').html(data);
-                    $('#DeletePopUp').modal("show");
-                } else {
-                    console.log(data.message);
+        function checkAllCustomers() {
+            let AllCustomersCheckBox = document.getElementById('checkbox-All-customers');
+            if (AllCustomersCheckBox.checked) {
+                let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
+                for (let i = 0; i < CustomersCheckBox.length; i++) {
+                    CustomersCheckBox[i].checked = true;
                 }
-            },
-            error: function (xhr, status, error) {
-                console.log(error);
+
+                document.getElementById('btnDeleteCustomer').disabled = false;
+            } else {
+                let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
+                for (let i = 0; i < CustomersCheckBox.length; i++) {
+                    CustomersCheckBox[i].checked = false;
+                }
+                document.getElementById('btnDeleteCustomer').disabled = true;
             }
-        });
-    }
-    
-</script>
+
+        }
+        function deleteCustomer(customerId) {
+            DeletePopUp([customerId]);
+        }
+
+        function deleteMultipleCustomers() {
+            let CustomersCheckBox = document.querySelectorAll('.checkbox-customer');
+            let CustomerIds = [];
+            CustomersCheckBox.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    CustomerIds.push(checkbox.value);
+                }
+            });
+            DeletePopUp(CustomerIds);
+        }
+
+
+        function DeletePopUp(CustomerIds) {
+            $.ajax({
+                url: '/Customers/deleteconfirmation',
+                type: 'POST',
+                data: { customerIds: CustomerIds },
+                success: function (data) {
+                    if (data.message == null) {
+                        $('#DeletePopUp').html('');
+                        $('#DeletePopUp').html(data);
+                        $('#DeletePopUp').modal("show");
+                    } else {
+                        console.log(data.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+    </script>
+}

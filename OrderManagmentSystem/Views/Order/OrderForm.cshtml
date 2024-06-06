@@ -43,7 +43,7 @@
             </div>
             <span class="text-danger" asp-validation-for="@Model.Order.Quantity"></span>
         </div>
-        
+
         <div class="col-lg">
             <div class="d-flex form-floating  border-muted rounded border me-2 my-2 ">
                 <input type="text" class="form-control border-0 "
@@ -80,17 +80,24 @@
     </form>
 </div>
 
+@section Scripts {
+    <script asp-append-version="true">
+        function fillTotalAmount() {
+            var quantity = $('#quantity').val();
+            var amount = $('#amount').val();
+            $('#totalamount').val(amount * quantity);
 
-<script>
-    function fillTotalAmount() { 
-        var quantity = $('#quantity').val();
-        var amount = $('#amount').val();
-        $('#totalamount').val(amount * quantity);
-
+        }
+        $(document).ready(function () {
+            fillTotalAmount();
+            $('#quantity').on('change', fillTotalAmount);
+            $('#amount').on('change', fillTotalAmount);
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    $(document).ready(function () {
-        fillTotalAmount();
-        $('#quantity').on('change', fillTotalAmount);
-        $('#amount').on('change', fillTotalAmount);
-    });
-</script>
+}
+
+
+
