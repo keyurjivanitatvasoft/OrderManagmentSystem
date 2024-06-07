@@ -6,12 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderManagmentSytemDAL.ViewModels
+namespace OrderManagmentSytemDAL.DTOs
 {
-    public class CustomerDetails
+    public class AddCustomerDTO
     {
-
-        public int CustomerId { get; set; }
 
         [Required(ErrorMessage = "First name is required")]
         [RegularExpression(@"^\s*[a-zA-Z]+\s*$", ErrorMessage = "First name must contain only letters.")]
@@ -30,8 +28,8 @@ namespace OrderManagmentSytemDAL.ViewModels
         [DataType(DataType.PhoneNumber, ErrorMessage = "Invalid phone number format")]
         [RegularExpression(@"^\s*\d{10}\s*$", ErrorMessage = "Phone number must be 10 digits")]
         public string PhoneNumber { get; set; }
-        public string? Address { get; set; }
 
-        public string? Photo {get;set;}
+        public IFormFile? ProfilePic { get; set; }
+        public string? Address { get; set; }
     }
 }

@@ -49,8 +49,6 @@
                         <td>@customer.Address</td>
                         <td>
                             <a asp-action="EditCustomer" asp-controller="Customer" asp-route-customerId="@customer.CustomerId" type="button" class="btn btn-primary">Edit</a>
-                            <!--
-                                <a asp-action="DeleteCustomer" asp-controller="Customer" asp-route-customerId="@customer.CustomerId" type="button" class="btn btn-danger">Delete</a> -->
                             <button type="button" onclick="deleteCustomer(@customer.CustomerId)" class="btn btn-danger">Delete</button>
                         </td>
                     </tr>

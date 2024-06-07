@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
 using Dapper;
+using OrderManagmentSytemDAL.DTOs;
 
 namespace OrderManagmentSytemBAL.OrderRepositry
 {
@@ -17,6 +18,7 @@ namespace OrderManagmentSytemBAL.OrderRepositry
         {
             context = new OrderManagmentSystemDapperContext(connectionStrings.Value.OrderManagmentSystem);
         }
+
         #region simple CRUD (Task 1)
         public Response CreateOrder(Order order)
         {
@@ -245,7 +247,7 @@ namespace OrderManagmentSytemBAL.OrderRepositry
                 var parameters = new DynamicParameters();
                 parameters.Add("@OrderIds", orders.AsTableValuedParameter("IntListType"));
                 int ordersCount = context.QuerySingle<int>("OrdersExits", parameters, true);
-                if(ordersCount == orderIds.Count())
+                if (ordersCount == orderIds.Count())
                 {
                     response.StatusCode = HttpStatusCode.OK;
                     response.IsSuccess = true;
@@ -278,7 +280,7 @@ namespace OrderManagmentSytemBAL.OrderRepositry
                 var parameters = new DynamicParameters();
                 parameters.Add("@OrderIds", orders.AsTableValuedParameter("IntListType"));
                 int rowsaffected = context.Execute("DeleteOrders", parameters, true);
-                if (rowsaffected>0)
+                if (rowsaffected > 0)
                 {
                     response.StatusCode = HttpStatusCode.OK;
                     response.IsSuccess = true;
@@ -298,5 +300,104 @@ namespace OrderManagmentSytemBAL.OrderRepositry
         }
         #endregion
 
+        #region Api (Task 5)
+        public Response GetOrderById(int id)
+        {
+            Response response = new Response();
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@OrderId", id);
+
+                IEnumerable<OrderWithCustomer> customersData = context.Query<OrderWithCustomer>("SearchOrder", parameters, true);
+                if (customersData.Count() == 1)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                    response.Result = customersData;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.BadRequest;
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+        public Response AddOrder(AddOrderDTO order)
+        {
+            Response response = new Response();
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@ProductName", order.ProductName);
+                parameters.Add("@Amount", order.Amount);
+                parameters.Add("@Quantity", order.Quantity);
+                parameters.Add("@CustomerId", order.CustomerId);
+                parameters.Add("@IsDelete", false);
+
+                int rowaffected = context.Execute("SaveOrder", parameters, true);
+                if (rowaffected > 0)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.BadRequest;
+                    response.IsSuccess = false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode= HttpStatusCode.InternalServerError;
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+        public Response EditOrder(int id, AddOrderDTO order)
+        {
+            Response response = new Response();
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@ProductName", order.ProductName);
+                parameters.Add("@Amount", order.Amount);
+                parameters.Add("@Quantity", order.Quantity);
+                parameters.Add("@OrderId", id);
+                parameters.Add("@CustomerId", order.CustomerId);
+                parameters.Add("@IsDelete", false);
+
+                int rowaffected = context.Execute("SaveOrder", parameters, true);
+                if (rowaffected > 0)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.BadRequest;
+                    response.IsSuccess = false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+        #endregion
     }
+
 }

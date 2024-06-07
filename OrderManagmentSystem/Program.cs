@@ -3,6 +3,8 @@ using AspNetCoreHero.ToastNotification.Extensions;
 using Microsoft.Extensions.Configuration;
 using OrderManagmentSytemBAL.CustomerRepositry;
 using OrderManagmentSytemBAL.OrderRepositry;
+using OrderManagmentSytemBAL.Services.Auth;
+using OrderManagmentSytemBAL.UserRepositry;
 using OrderManagmentSytemDAL.ViewModels;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ICustomerRepositry,CustomerRepositry>();
 builder.Services.AddScoped<IOrderRepositry, OrderRepositry>();
+builder.Services.AddScoped<IUserRepositry, UserRespositry>();
+builder.Services.AddScoped<IJWTService,JWTService>();
 builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
 builder.Services.AddNotyf(config =>
 {

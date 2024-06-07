@@ -42,7 +42,6 @@
                         <td>@order.CustomerFirstName @order.CustomerLastName</td>
                         <td>
                             <a asp-action="EditOrder" asp-controller="Order" asp-route-orderId="@order.OrderId" type="button" class="btn btn-primary">Edit</a>
-                            <!--<a asp-action="DeleteOrder" asp-controller="Order" asp-route-orderId="@order.OrderId" type="button" class="btn btn-danger">Delete</a>-->
                             <button type="button" onclick="deleteOrder(@order.OrderId)" class="btn btn-danger">Delete</button>
                         </td>
                     </tr>

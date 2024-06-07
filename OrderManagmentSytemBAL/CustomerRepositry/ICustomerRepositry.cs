@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using OrderManagmentSytemDAL.DTOs;
 using OrderManagmentSytemDAL.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
         #region UploadFiles
         string UploadFile(IFormFile file);
         #endregion
+
         #region simple CRUD (Task 1)
         Response CustomerExits(int customerId, string emailId, string phoneNumber);
         Response GetCustomers();
@@ -31,6 +33,13 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
 
         Response CustomersExits(List<int> customerIds);
         Response DeleteCustomers(List<int> customerIds);
+        #endregion
+
+        #region API ( Task 5 )
+        Response GetCustomerById(int customerId);
+
+        Response AddCustomer(AddCustomerDTO customerDetails, string? fileName);
+        Response EditCustomer(int id, AddCustomerDTO customerDetails, string? fileName);
         #endregion
     }
 }

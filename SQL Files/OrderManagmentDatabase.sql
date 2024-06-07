@@ -60,7 +60,7 @@ BEGIN
 		 ORDER BY Customer.CustomerId
 END;
 
-EXEC search_customers NULL, NULL, NULL, NULL,NULL, 3;
+EXEC SearchCustomers NULL, NULL, NULL, NULL,NULL, 1;
 
 
 --for adding and updateing data of customer
@@ -278,3 +278,24 @@ CREATE TABLE Product (
     quantity INT NOT NULL,
     FOREIGN KEY (productTypeId) REFERENCES ProductType(productTypeId)
 );
+
+
+
+Create Table [User] (
+	UserId INT PRIMARY KEY IDENTITY(1,1),
+	UserName VARCHAR(50) NOT NULL,
+	Password VARCHAR(50) NOT NULL,
+);
+
+CREATE OR ALTER PROCEDURE LoginUser 
+    @UserName  VARCHAR(50) ,
+	@Password VARCHAR(50) 
+AS
+BEGIN
+	SELECT u.UserId as UserId,u.UserName as UserName 
+	FROM [User] as u
+	WHERE u.UserName=@UserName AND
+	u.Password=@Password 
+END;
+
+INSERT INTO [User] (UserName,Password) VALUES ('keyur','123');

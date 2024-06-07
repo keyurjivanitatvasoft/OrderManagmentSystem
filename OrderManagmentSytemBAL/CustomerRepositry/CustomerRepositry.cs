@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using OrderManagmentSytemBAL.Services;
 using OrderManagmentSytemDAL.DbContext;
+using OrderManagmentSytemDAL.DTOs;
 using OrderManagmentSytemDAL.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             return null;
         }
         #endregion
+
         #region BASIC CRUD (Task 1)
         public Response GetCustomers()
         {
@@ -257,7 +259,6 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
         }
         #endregion
 
-
         #region SP CRUD (Task 2)
         public Response SearchCustomerSP(CustomerDetails searchCustomer)
         {
@@ -344,7 +345,6 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
 
         #endregion
 
-
         #region Task 4
 
         public Response CustomersExits(List<int> customerIds)
@@ -384,6 +384,7 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             }
             catch (Exception ex)
             {
+                response.StatusCode = HttpStatusCode.InternalServerError;
                 response.IsSuccess = false;
                 response.ErrorMessages = new List<string>() { ex.ToString() };
             }
@@ -429,6 +430,127 @@ namespace OrderManagmentSytemBAL.CustomerRepositry
             {
                 response.IsSuccess = false;
                 response.StatusCode = HttpStatusCode.InternalServerError;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+
+        #endregion
+
+        #region API (Task 5 )
+        public Response GetCustomerById(int customerId)
+        {
+            Response response = new Response();
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@CustomerId", customerId),
+                };
+
+                DataTable customersData = context.ExecuteReader("SearchCustomers", parameters, true);
+                if (customersData.Rows.Count == 1)
+                {
+                    CustomerDetails customer = new CustomerDetails
+                    {
+                        CustomerId = Convert.ToInt32(customersData.Rows[0]["CustomerId"]),
+                        CustomerFirstName = customersData.Rows[0]["CustomerFirstName"].ToString(),
+                        CustomerLastName = customersData.Rows[0]["CustomerLastName"].ToString(),
+                        EmailId = customersData.Rows[0]["EmailId"].ToString(),
+                        PhoneNumber = customersData.Rows[0]["PhoneNumber"].ToString(),
+                        Address = customersData.Rows[0]["Address"].ToString(),
+                        Photo = customersData.Rows[0]["Photo"].ToString(),
+                    };
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                    response.Result = customer;
+
+                }
+                else
+                {
+
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+        public Response AddCustomer(AddCustomerDTO customerDetails, string? fileName)
+        {
+            Response response = new Response();
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                   new SqlParameter("@FirstName", customerDetails.CustomerFirstName),
+                    new SqlParameter("@LastName", customerDetails.CustomerLastName),
+                    new SqlParameter("@PhoneNumber", customerDetails.PhoneNumber),
+                    new SqlParameter("@EmailId", customerDetails.EmailId),
+                    new SqlParameter("@Address", customerDetails.Address),
+                    new SqlParameter("@IsDelete",false ),
+                    new SqlParameter("@Photo",fileName ),
+
+                };
+
+                int rowaffected = context.ExecuteNonQuery("SaveCustomers", parameters, true);
+                if (rowaffected > 0)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return response;
+        }
+
+        public Response EditCustomer(int id, AddCustomerDTO customerDetails, string? fileName)
+        {
+            Response response = new Response();
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                   new SqlParameter("@FirstName", customerDetails.CustomerFirstName),
+                    new SqlParameter("@LastName", customerDetails.CustomerLastName),
+                    new SqlParameter("@PhoneNumber", customerDetails.PhoneNumber),
+                    new SqlParameter("@EmailId", customerDetails.EmailId),
+                    new SqlParameter("@Address", customerDetails.Address),
+                    new SqlParameter("@CustomerId", id),
+                    new SqlParameter("@IsDelete",false ),
+                    new SqlParameter("@Photo",fileName ),
+
+                };
+
+                int rowaffected = context.ExecuteNonQuery("SaveCustomers", parameters, true);
+                if (rowaffected > 0)
+                {
+                    response.StatusCode = HttpStatusCode.OK;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
                 response.ErrorMessages = new List<string>() { ex.ToString() };
             }
             return response;

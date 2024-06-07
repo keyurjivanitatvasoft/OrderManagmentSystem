@@ -1,4 +1,5 @@
-﻿using OrderManagmentSytemDAL.ViewModels;
+﻿using OrderManagmentSytemDAL.DTOs;
+using OrderManagmentSytemDAL.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace OrderManagmentSytemBAL.OrderRepositry
 {
     public  interface IOrderRepositry
     {
+
         #region simple CRUD (Task 1)
         Response GetOrders();
         Response GetOrder(int orderId);
@@ -17,12 +19,13 @@ namespace OrderManagmentSytemBAL.OrderRepositry
 
         Response DeleteOrder(int orderId);
         #endregion
+
         #region CRUD SP (Task 2)
         Response SearchOrderSP(Order order);
         Response SaveOrdersSP(Order order,bool Isdelete);
         #endregion
 
-        #region customerOrderDetailsc (Task 3)
+        #region customerOrderDetails (Task 3)
         Response CustomerOrderDetails();
         #endregion
 
@@ -32,5 +35,11 @@ namespace OrderManagmentSytemBAL.OrderRepositry
         Response DeleteOrders(List<int> orderIds);
         #endregion
 
+        #region Api (Task 5)
+        Response GetOrderById(int id);
+
+        Response AddOrder(AddOrderDTO order);
+        Response EditOrder(int id,AddOrderDTO order);
+        #endregion
     }
 }
