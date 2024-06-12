@@ -8,9 +8,16 @@ using System.Security.Claims;
 
 namespace OrderManagmentSystem.Controllers
 {
+   
+
+
     public class CustomAuthorization : Attribute, IAuthorizationFilter
     {
-        public CustomAuthorization() { }
+
+        public CustomAuthorization()
+        {
+            
+        }
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var jwtService = context.HttpContext.RequestServices.GetService<IJWTService>();

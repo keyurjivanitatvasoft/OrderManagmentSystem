@@ -23,8 +23,19 @@ builder.Services.AddNotyf(config =>
     config.Position = NotyfPosition.TopRight;
 }
 );
-var app = builder.Build();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000") // Replace with your frontend URL
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 
+var app = builder.Build();
+app.UseCors("AllowFrontend");
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

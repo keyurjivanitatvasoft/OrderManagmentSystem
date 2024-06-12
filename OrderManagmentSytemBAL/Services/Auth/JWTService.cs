@@ -31,7 +31,7 @@ namespace OrderManagmentSytemBAL.Services.Auth
                 Encoding.UTF8.GetBytes(Convert.ToString(configuration["Jwt:Key"])));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expires =
-                DateTime.Now.AddMinutes(10);
+                DateTime.Now.AddMinutes(60);
 
             var token = new JwtSecurityToken(
                 configuration["Jwt:Issuer"],
